@@ -50,6 +50,7 @@ contract FeedBase is MakerUser
             throw;
         }
         _feeds[last_id].owner = msg.sender;
+        FeedUpdate(last_id);
         return last_id;
     }
     function transfer(uint64 id, address to)

@@ -43,4 +43,25 @@ contract FeedBaseTest is Test
         fb.setFeedCost(feed1, 100);
         var value = t1.doGet(feed1);
     }
+    function testFailGetExpiredFeed() {
+        fb.setFeed(feed1, 0x42, block.timestamp-1);
+        fb.get(feed1);
+    }
+    function testTransfer() {
+        fb.transfer(feed1, t1);
+        FeedBase(t1).setFeed(feed1, 0x42, block.timestamp+1);
+        assertEq32(fb.get(feed1), 0x42);
+    }
+    event FeedUpdate( uint64 indexed id );
+    function testEvents() {
+        expectEventsExact(fb);
+        fb.setFeedCost(feed1, 0);
+        FeedUpdate(feed1);
+        fb.setFeed(feed1, 0x42, block.timestamp+1);
+        FeedUpdate(feed1);
+        fb.transfer(feed1, t1);
+        FeedUpdate(feed1);
+        var feed2 = fb.claim();
+        FeedUpdate(feed2);
+    }
 }
