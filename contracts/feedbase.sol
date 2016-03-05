@@ -56,9 +56,6 @@ contract FeedBase is MakerUser
     function transfer(uint64 id, address to)
              feed_owner( id )
     {
-        if( msg.sender != _feeds[id].owner ) {
-            throw;
-        }
         _feeds[id].owner = to;
         FeedUpdate( id );
     }
