@@ -1,11 +1,13 @@
-onload = function redraw() {
+document.addEventListener("DOMContentLoaded", redraw)
+
+function redraw() {
   ReactDOM.render(
     renderFeeds(),
     document.getElementById("feeds")
   )
 }
 
-// Indentation is easier when children is an array.
+// Indentation is easier if children is an array.
 var tag = function(type, props, children) {
   return React.createElement.apply(
     null, [type, props].concat(children || [])
