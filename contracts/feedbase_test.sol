@@ -1,6 +1,6 @@
 import 'dapple/test.sol';
 import 'feedbase.sol';
-import 'makeruser/mock.sol';
+import 'maker-user/mock.sol';
 
 contract GetProxy is Tester {
     function doGet(uint64 id) returns (bytes32 value) {

@@ -1,5 +1,5 @@
 import 'dapple/debug.sol';
-import 'makeruser/user.sol';
+import 'maker-user/user.sol';
 
 contract FeedBase is MakerUser 
 //, Debug
