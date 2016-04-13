@@ -1,11 +1,11 @@
 name: "feedbase"
-version: 0.1.0
+version: 0.1.1
 layout:
     sol_sources: "contracts"
     build_dir: "build"
 dependencies:
     dappsys: 0.1.2
-    makeruser: 0.1.4
+    makeruser: 0.1.5
 environments:
     morden:
         objects:
