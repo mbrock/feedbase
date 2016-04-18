@@ -33,10 +33,17 @@ contract FeedBaseTest is Test
         fb.setFeedCost(feed1, 100);
         var DAI = _M.getToken("DAI");
         DAI.transfer(t1, 100);
+
         t1._target(DAI);
         DSToken(t1).approve(fb, 100);
         t1._target(fb);
+
+        assertEq(DAI.balanceOf(t1), 100);
+        var pre = DAI.balanceOf(this);
         var value = t1.doGet(feed1);
+        var post = DAI.balanceOf(this);
+        assertEq(post - pre, 100);
+        assertEq(DAI.balanceOf(t1), 0);
         assertEq32(value, 0x42);
     }
     function testFailSetGetPaid() {
