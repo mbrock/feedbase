@@ -46,6 +46,25 @@ contract FeedBaseTest is Test
         assertEq(DAI.balanceOf(t1), 0);
         assertEq32(value, 0x42);
     }
+    function testSetGetTwicePaidOnce() {
+        fb.setFeed(feed1, 0x42, block.timestamp+1);
+        fb.setFeedCost(feed1, 100);
+        var DAI = _M.getToken("DAI");
+        DAI.transfer(t1, 100);
+
+        t1._target(DAI);
+        DSToken(t1).approve(fb, 100);
+        t1._target(fb);
+
+        var pre = DAI.balanceOf(this);
+        var value1 = t1.doGet(feed1);
+        var post1 = DAI.balanceOf(this);
+        var value2 = t1.doGet(feed1);
+        var post2 = DAI.balanceOf(this);
+        assertEq(post1 - pre, 100);
+        assertEq(post2 - post1, 0);
+        assertEq32(value2, 0x42);
+    }
     function testFailSetGetPaid() {
         fb.setFeedCost(feed1, 100);
         var value = t1.doGet(feed1);
