@@ -66,7 +66,7 @@ contract FeedBase is MakerUser
             throw;
         }
         if( !entry.paid ) {
-            transferFrom(msg.sender, this, entry.cost, "DAI");
+            transferFrom(msg.sender, entry.owner, entry.cost, "DAI");
             entry.paid = true;
         }
         return entry.value;
