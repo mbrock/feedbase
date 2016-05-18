@@ -1,14 +1,12 @@
 import 'dapple/debug.sol';
 import 'maker-user/user.sol';
 
-contract FeedBase is MakerUser 
-//, Debug
-{
+contract FeedBase is MakerUser {
     function FeedBase( MakerUserLinkType M )
-             MakerUser( M )
+        MakerUser( M )
     {}
 
-    struct FeedEntry {
+    struct Feed {
         bytes32 value;
         address owner;
         uint timestamp;
@@ -21,7 +19,7 @@ contract FeedBase is MakerUser
     event FeedUpdate( uint64 indexed id );
 
     uint32 last_id;
-    mapping( uint64 => FeedEntry ) _feeds;
+    mapping( uint64 => Feed ) _feeds;
 
     modifier feed_owner( uint64 id ) {
         if( msg.sender != _feeds[id].owner ) {
@@ -32,11 +30,11 @@ contract FeedBase is MakerUser
     function setFeed(uint64 id, bytes32 value, uint expiration)
              feed_owner( id )
     {
-        var entry = _feeds[id];
-        entry.value = value;
-        entry.timestamp = block.timestamp;
-        entry.expiration = expiration;
-        entry.paid = false;
+        var feed = _feeds[id];
+        feed.value = value;
+        feed.timestamp = block.timestamp;
+        feed.expiration = expiration;
+        feed.paid = false;
         FeedUpdate( id );
     }
     function setFeedCost(uint64 id, uint cost, ERC20 token)
@@ -68,24 +66,17 @@ contract FeedBase is MakerUser
     }
 
     function get( uint64 id ) returns (bytes32 value) {
-        var entry = _feeds[id];
-        if( block.timestamp > entry.expiration ) {
+        var feed = _feeds[id];
+        if( block.timestamp > feed.expiration ) {
             throw;
         }
-        if( !entry.paid ) {
-            entry.token.transferFrom(msg.sender, entry.owner, entry.cost);
-            entry.paid = true;
+        if( !feed.paid ) {
+            feed.token.transferFrom(msg.sender, feed.owner, feed.cost);
+            feed.paid = true;
         }
-        return entry.value;
+        return feed.value;
     }
 }
 
-
-
 contract FeedBaseMainnet is FeedBase(MakerUserLinkType(0x0)) {}
 contract FeedBaseMorden is FeedBase(MakerUserLinkType(0x1)) {}
-
-
-
-
-
