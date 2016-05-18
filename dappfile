@@ -1,7 +1,7 @@
 name: feedbase
 version: 0.2-dev
 layout:
-    sol_sources: contracts
-    build_dir: build
+  sol_sources: contracts
+  build_dir: build
 dependencies:
-    dappsys: 0.1.2
+  dappsys: 0.3.0-dev
