@@ -1,11 +1,6 @@
-import 'dapple/debug.sol';
-import 'maker-user/user.sol';
+import "dappsys/token/erc20.sol";
 
-contract Feedbase is MakerUser {
-    function Feedbase( MakerUserLinkType M )
-        MakerUser( M )
-    {}
-
+contract Feedbase {
     struct Feed {
         bytes32 value;
         address owner;
@@ -44,11 +39,6 @@ contract Feedbase is MakerUser {
         _feeds[id].token = token;
         FeedUpdate( id );
     }
-    function setFeedCost(uint64 id, uint cost)
-             feed_owner( id )
-    {
-        setFeedCost(id, cost, getToken("DAI"));
-    }
     function claim() returns (uint64 id) {
         last_id++;
         if( last_id == 0 ) { // ran out of IDs
@@ -77,6 +67,3 @@ contract Feedbase is MakerUser {
         return feed.value;
     }
 }
-
-contract FeedbaseMainnet is Feedbase(MakerUserLinkType(0x0)) {}
-contract FeedbaseMorden is Feedbase(MakerUserLinkType(0x1)) {}

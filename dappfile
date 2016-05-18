@@ -5,10 +5,3 @@ layout:
     build_dir: "build"
 dependencies:
     dappsys: 0.1.2
-    makeruser: 0.1.5
-environments:
-    morden:
-        objects:
-            feedbase1:
-                class: FeedBase
-                address: '0x013deb4565936fec07f4a579fcd5b23f1f5c7894'
