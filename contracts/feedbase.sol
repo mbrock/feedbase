@@ -1,8 +1,8 @@
 import 'dapple/debug.sol';
 import 'maker-user/user.sol';
 
-contract FeedBase is MakerUser {
-    function FeedBase( MakerUserLinkType M )
+contract Feedbase is MakerUser {
+    function Feedbase( MakerUserLinkType M )
         MakerUser( M )
     {}
 
@@ -78,5 +78,5 @@ contract FeedBase is MakerUser {
     }
 }
 
-contract FeedBaseMainnet is FeedBase(MakerUserLinkType(0x0)) {}
-contract FeedBaseMorden is FeedBase(MakerUserLinkType(0x1)) {}
+contract FeedbaseMainnet is Feedbase(MakerUserLinkType(0x0)) {}
+contract FeedbaseMorden is Feedbase(MakerUserLinkType(0x1)) {}
