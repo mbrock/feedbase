@@ -19,13 +19,13 @@ contract FeedbaseTest is Test {
 
     function setUp() {
         tester._target(feedbase);
-        id = feedbase.claim();
+        id = feedbase.claim(dai);
     }
 
     function test_claim() {
         assertEq(uint(0), uint(id));
-        assertEq(uint(1), feedbase.claim());
-        assertEq(uint(2), feedbase.claim());
+        assertEq(uint(1), feedbase.claim(dai));
+        assertEq(uint(2), feedbase.claim(dai));
     }
 
     function test_get_free_feed() {
@@ -35,7 +35,7 @@ contract FeedbaseTest is Test {
 
     function test_get_paid_feed() {
         feedbase.update(id, 0x42, block.timestamp + 1);
-        feedbase.setFee(id, 100, dai);
+        feedbase.setFee(id, 100);
         dai.transfer(tester, 100);
 
         tester._target(dai);
@@ -52,7 +52,7 @@ contract FeedbaseTest is Test {
     
     function testFail_get_paid_feed() {
         feedbase.update(id, 0x42, block.timestamp + 1);
-        feedbase.setFee(id, 100, dai);
+        feedbase.setFee(id, 100);
         dai.transfer(tester, 99);
 
         tester._target(dai);
@@ -64,7 +64,7 @@ contract FeedbaseTest is Test {
     
     function test_get_paid_feed_twice() {
         feedbase.update(id, 0x42, block.timestamp + 1);
-        feedbase.setFee(id, 100, dai);
+        feedbase.setFee(id, 100);
         dai.transfer(tester, 100);
 
         tester._target(dai);
@@ -82,12 +82,6 @@ contract FeedbaseTest is Test {
         assertEq32(value2, 0x42);
     }
     
-    function test_get_feed_with_bogus_fee_token() {
-        feedbase.update(id, 0x42, block.timestamp + 1);
-        feedbase.setFee(id, 100, ERC20(0xdeadbeef));
-        assertEq32(tester.get(id), 0x42);
-    }
-    
     function testFail_get_expired_feed() {
         feedbase.update(id, 0x42, block.timestamp - 1);
         feedbase.get(id);
@@ -101,7 +95,7 @@ contract FeedbaseTest is Test {
     
     function test_events() {
         expectEventsExact(feedbase);
-        feedbase.setFee(id, 0, dai);
+        feedbase.setFee(id, 0);
         Update(id);
         feedbase.setDescription(id, "foo");
         Update(id);
@@ -109,7 +103,7 @@ contract FeedbaseTest is Test {
         Update(id);
         feedbase.transfer(id, tester);
         Update(id);
-        var id2 = feedbase.claim();
+        var id2 = feedbase.claim(dai);
         Update(id2);
     }
 }

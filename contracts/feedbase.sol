@@ -37,9 +37,10 @@ contract Feedbase {
         _
     }
 
-    function claim() returns (uint64 id) {
+    function claim(ERC20 token) returns (uint64 id) {
         id = getNextID();
         feeds[id].owner = msg.sender;
+        feeds[id].token = token;
         Update(id);
     }
 
@@ -53,9 +54,8 @@ contract Feedbase {
         Update(id);
     }
 
-    function setFee(uint64 id, uint fee, ERC20 token) auth(id) {
+    function setFee(uint64 id, uint fee) auth(id) {
         feeds[id].fee = fee;
-        feeds[id].token = token;
         Update(id);
     }
 
@@ -79,7 +79,7 @@ contract Feedbase {
             throw;
         }
 
-        if (!feed.paid) {
+        if (address(feed.token) != 0 && !feed.paid) {
             feed.token.transferFrom(msg.sender, feed.owner, feed.fee);
             feed.paid = true;
         }
