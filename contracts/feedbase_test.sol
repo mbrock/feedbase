@@ -3,8 +3,8 @@ import "dappsys/token/base.sol";
 import "feedbase.sol";
 
 contract FeedbaseTester is Tester {
-    function get(uint64 id) returns (bytes32 value) {
-        return Feedbase(_t).get(id);
+    function getValue(uint64 id) returns (bytes32 value) {
+        return Feedbase(_t).getValue(id);
     }
 }
 
@@ -29,12 +29,12 @@ contract FeedbaseTest is Test {
     }
 
     function test_get_free_feed() {
-        feedbase.update(id, 0x42, block.timestamp + 1);
-        assertEq32(tester.get(id), 0x42);
+        feedbase.setValue(id, 0x42, block.timestamp + 1);
+        assertEq32(tester.getValue(id), 0x42);
     }
 
     function test_get_paid_feed() {
-        feedbase.update(id, 0x42, block.timestamp + 1);
+        feedbase.setValue(id, 0x42, block.timestamp + 1);
         feedbase.setFee(id, 100);
         dai.transfer(tester, 100);
 
@@ -44,14 +44,14 @@ contract FeedbaseTest is Test {
         tester._target(feedbase);
         assertEq(dai.balanceOf(tester), 100);
         var initial = dai.balanceOf(this);
-        var value = tester.get(id);
+        var value = tester.getValue(id);
         assertEq(dai.balanceOf(this) - initial, 100);
         assertEq(dai.balanceOf(tester), 0);
         assertEq32(value, 0x42);
     }
     
     function testFail_get_paid_feed() {
-        feedbase.update(id, 0x42, block.timestamp + 1);
+        feedbase.setValue(id, 0x42, block.timestamp + 1);
         feedbase.setFee(id, 100);
         dai.transfer(tester, 99);
 
@@ -59,11 +59,11 @@ contract FeedbaseTest is Test {
         DSToken(tester).approve(feedbase, 100);
 
         tester._target(feedbase);
-        tester.get(id);
+        tester.getValue(id);
     }
     
     function test_get_paid_feed_twice() {
-        feedbase.update(id, 0x42, block.timestamp + 1);
+        feedbase.setValue(id, 0x42, block.timestamp + 1);
         feedbase.setFee(id, 100);
         dai.transfer(tester, 100);
 
@@ -72,9 +72,9 @@ contract FeedbaseTest is Test {
 
         tester._target(feedbase);
         var pre = dai.balanceOf(this);
-        var value1 = tester.get(id);
+        var value1 = tester.getValue(id);
         var post1 = dai.balanceOf(this);
-        var value2 = tester.get(id);
+        var value2 = tester.getValue(id);
         var post2 = dai.balanceOf(this);
         assertEq(post1 - pre, 100);
         assertEq(post2 - post1, 0);
@@ -83,14 +83,14 @@ contract FeedbaseTest is Test {
     }
     
     function testFail_get_expired_feed() {
-        feedbase.update(id, 0x42, block.timestamp - 1);
-        feedbase.get(id);
+        feedbase.setValue(id, 0x42, block.timestamp - 1);
+        feedbase.getValue(id);
     }
     
     function test_transfer() {
         feedbase.transfer(id, tester);
-        Feedbase(tester).update(id, 0x123, block.timestamp+1);
-        assertEq32(feedbase.get(id), 0x123);
+        Feedbase(tester).setValue(id, 0x123, block.timestamp + 1);
+        assertEq32(feedbase.getValue(id), 0x123);
     }
     
     function test_events() {
@@ -99,7 +99,7 @@ contract FeedbaseTest is Test {
         Update(id);
         feedbase.setDescription(id, "foo");
         Update(id);
-        feedbase.update(id, 0x42, block.timestamp + 1);
+        feedbase.setValue(id, 0x42, block.timestamp + 1);
         Update(id);
         feedbase.transfer(id, tester);
         Update(id);
