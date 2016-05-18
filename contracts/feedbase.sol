@@ -1,74 +1,86 @@
+// Feedbase -- open-access service for price feed consumers/publishers
+//
+// This simple contract enables anyone to claim a feed ID which can
+// then be used to publish a sequence of arbitrary values over time.
+//
+// The feed can be updated at any time, and an expiration date can be
+// set to prevent anyone from reading stale data.
+//
+// In addition, the owner of a feed is able to specify a fee which is
+// charged to whoever becomes the first to read each published value.
+
 import "dappsys/token/erc20.sol";
 
 contract Feedbase {
     event Update(uint64 indexed id);
 
     struct Feed {
-        bytes32 value;
         address owner;
-        uint timestamp;
+        bytes32 description;
+
+        bytes32 value;
+        uint updated;
         uint expires;
+
         ERC20 token;
-        uint cost;
+        uint fee;
         bool paid;
     }
 
     uint32 next_id;
-    mapping(uint64 => Feed) _feeds;
+    mapping(uint64 => Feed) feeds;
 
     modifier auth(uint64 id) {
-        if (msg.sender != _feeds[id].owner) {
+        if (msg.sender != feeds[id].owner) {
           throw;
         }
         _
     }
 
     function claim() returns (uint64 id) {
+        id = getNextID();
+        feeds[id].owner = msg.sender;
+        Update(id);
+    }
+
+    function getNextID() internal returns (uint64 id) {
         id = next_id++;
+        if (next_id == 0) throw; // Ran out of IDs.
+    }
 
-        if (next_id == 0) {
-            throw; // Ran out of IDs.
-        }
-
-        var feed = _feeds[id];
-        feed.owner = msg.sender;
+    function setDescription(uint64 id, bytes32 description) auth(id) {
+        feeds[id].description = description;
         Update(id);
     }
 
-    function set(uint64 id, bytes32 value, uint expires) auth(id) {
-        var feed = _feeds[id];
-
-        feed.value = value;
-        feed.timestamp = block.timestamp;
-        feed.expires = expires;
-        feed.paid = false;
-
+    function setFee(uint64 id, uint fee, ERC20 token) auth(id) {
+        feeds[id].fee = fee;
+        feeds[id].token = token;
         Update(id);
     }
 
-    function configure(uint64 id, uint cost, ERC20 token) auth(id) {
-        var feed = _feeds[id];
-
-        feed.cost = cost;
-        feed.token = token;
-
-        Update( id );
+    function transfer(uint64 id, address new_owner) auth(id) {
+        feeds[id].owner = new_owner;
+        Update(id);
     }
 
-    function transfer(uint64 id, address to) auth(id) {
-        _feeds[id].owner = to;
+    function update(uint64 id, bytes32 value, uint expires) auth(id) {
+        feeds[id].value = value;
+        feeds[id].updated = block.timestamp;
+        feeds[id].expires = expires;
+        feeds[id].paid = false;
         Update(id);
     }
 
     function get(uint64 id) returns (bytes32 value) {
-        var feed = _feeds[id];
+        var feed = feeds[id];
 
         if (block.timestamp > feed.expires) {
             throw;
         }
 
         if (!feed.paid) {
-            feed.token.transferFrom(msg.sender, feed.owner, feed.cost);
+            feed.token.transferFrom(msg.sender, feed.owner, feed.fee);
             feed.paid = true;
         }
 
