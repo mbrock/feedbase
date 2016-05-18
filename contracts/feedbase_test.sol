@@ -67,7 +67,47 @@ contract FeedBaseTest is Test
     }
     function testFailSetGetPaid() {
         fb.setFeedCost(feed1, 100);
+        t1.doGet(feed1);
+    }
+    function testSetGetPaidPaidTokenBogus() {
+        // A bogus token cost behaves as a zero cost
+        fb.setFeed(feed1, 0x42, block.timestamp+1);
+        fb.setFeedCost(feed1, 100, ERC20(0xdeadbeef));
+        assertEq32(t1.doGet(feed1), 0x42);
+    }
+    function testSetGetPaidToken() {
+        fb.setFeed(feed1, 0x42, block.timestamp+1);
+
+        var MKR = getToken("MKR");
+        fb.setFeedCost(feed1, 100, MKR);
+
+        MKR.transfer(t1, 100);
+        t1._target(MKR);
+        DSToken(t1).approve(fb, 100);
+
+        assertEq(MKR.balanceOf(t1), 100);
+        var pre = MKR.balanceOf(this);
+
+        t1._target(fb);
         var value = t1.doGet(feed1);
+        assertEq32(value, 0x42);
+
+        var received = MKR.balanceOf(this) - pre;
+        assertEq(MKR.balanceOf(t1), 0);
+        assertEq(received, 100);
+    }
+    function testFailSetGetPaidToken() {
+        fb.setFeed(feed1, 0x42, block.timestamp+1);
+
+        var MKR = getToken("MKR");
+        fb.setFeedCost(feed1, 100, MKR);
+
+        MKR.transfer(t1, 99);
+        t1._target(MKR);
+        DSToken(t1).approve(fb, 100);
+
+        t1._target(fb);
+        t1.doGet(feed1);
     }
     function testFailGetExpiredFeed() {
         fb.setFeed(feed1, 0x42, block.timestamp-1);
