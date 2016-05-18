@@ -3,6 +3,7 @@ import "dappsys/token/base.sol";
 import "feedbase.sol";
 
 contract FeedbaseTester is Tester {
+    // Type declaration needed to retrieve return value
     function getValue(uint64 id) returns (bytes32 value) {
         return Feedbase(_t).getValue(id);
     }
