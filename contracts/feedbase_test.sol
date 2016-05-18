@@ -19,15 +19,15 @@ contract FeedbaseTest is Test {
         feed1 = fb.claim();
     }
     function testSetup() {
-        assertEq(uint(1), uint(feed1));
+        assertEq(uint(0), uint(feed1));
     }
     function testSetGetFree() {
-        fb.setFeed(feed1, 0x42, block.timestamp+1);
+        fb.set(feed1, 0x42, block.timestamp+1);
         assertEq32(t1.doGet(feed1), 0x42);
     }
     function testSetGetPaid() {
-        fb.setFeed(feed1, 0x42, block.timestamp+1);
-        fb.setFeedCost(feed1, 100, dai);
+        fb.set(feed1, 0x42, block.timestamp+1);
+        fb.configure(feed1, 100, dai);
         dai.transfer(t1, 100);
 
         t1._target(dai);
@@ -43,8 +43,8 @@ contract FeedbaseTest is Test {
         assertEq32(value, 0x42);
     }
     function testFailSetGetPaid() {
-        fb.setFeed(feed1, 0x42, block.timestamp+1);
-        fb.setFeedCost(feed1, 100, dai);
+        fb.set(feed1, 0x42, block.timestamp+1);
+        fb.configure(feed1, 100, dai);
         dai.transfer(t1, 99);
 
         t1._target(dai);
@@ -54,8 +54,8 @@ contract FeedbaseTest is Test {
         t1.doGet(feed1);
     }
     function testSetGetTwicePaidOnce() {
-        fb.setFeed(feed1, 0x42, block.timestamp+1);
-        fb.setFeedCost(feed1, 100, dai);
+        fb.set(feed1, 0x42, block.timestamp+1);
+        fb.configure(feed1, 100, dai);
         dai.transfer(t1, 100);
         
         t1._target(dai);
@@ -74,29 +74,29 @@ contract FeedbaseTest is Test {
     }
     function testSetGetPaidPaidTokenBogus() {
         // A bogus token cost behaves as a zero cost
-        fb.setFeed(feed1, 0x42, block.timestamp+1);
-        fb.setFeedCost(feed1, 100, ERC20(0xdeadbeef));
+        fb.set(feed1, 0x42, block.timestamp+1);
+        fb.configure(feed1, 100, ERC20(0xdeadbeef));
         assertEq32(t1.doGet(feed1), 0x42);
     }
     function testFailGetExpiredFeed() {
-        fb.setFeed(feed1, 0x42, block.timestamp-1);
+        fb.set(feed1, 0x42, block.timestamp-1);
         fb.get(feed1);
     }
     function testTransfer() {
         fb.transfer(feed1, t1);
-        Feedbase(t1).setFeed(feed1, 0x123, block.timestamp+1);
+        Feedbase(t1).set(feed1, 0x123, block.timestamp+1);
         assertEq32(fb.get(feed1), 0x123);
     }
-    event FeedUpdate( uint64 indexed id );
+    event Update( uint64 indexed id );
     function testEvents() {
         expectEventsExact(fb);
-        fb.setFeedCost(feed1, 0, dai);
-        FeedUpdate(feed1);
-        fb.setFeed(feed1, 0x42, block.timestamp+1);
-        FeedUpdate(feed1);
+        fb.configure(feed1, 0, dai);
+        Update(feed1);
+        fb.set(feed1, 0x42, block.timestamp+1);
+        Update(feed1);
         fb.transfer(feed1, t1);
-        FeedUpdate(feed1);
+        Update(feed1);
         var feed2 = fb.claim();
-        FeedUpdate(feed2);
+        Update(feed2);
     }
 }
