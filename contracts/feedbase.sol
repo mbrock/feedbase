@@ -91,6 +91,7 @@ contract Feedbase {
         if (!isFeePaid(id) && !isAlwaysFree(id)) {
             feed.feeToken.transferFrom(msg.sender, feed.owner, feed.fee);
             feed.feePaid = true;
+            Update(id);
         }
 
         return feed.value;
