@@ -19,20 +19,20 @@ contract Feedbase {
         address owner;
         bytes32 name;
         uint fee;
-        ERC20 fee_token;
+        ERC20 feeToken;
 
         int256 value;
         uint timestamp;
         uint expiration;
-        bool fee_paid;
+        bool feePaid;
     }
 
-    uint32 next_id;
+    uint64 nextID;
     mapping(uint64 => Feed) feeds;
 
     function getNextID() internal returns (uint64 id) {
-        id = next_id++;
-        if (next_id == 0) throw; // Ran out of IDs.
+        id = nextID++;
+        if (nextID == 0) throw; // Ran out of IDs.
     }
 
     modifier auth(uint64 id) {
@@ -45,10 +45,10 @@ contract Feedbase {
     //------------------------------------------------------------------
 
     function create() returns (uint64) { return create(ERC20(0)); }
-    function create(ERC20 fee_token) returns (uint64 id) {
+    function create(ERC20 feeToken) returns (uint64 id) {
         id = getNextID();
         feeds[id].owner = msg.sender;
-        feeds[id].fee_token = fee_token;
+        feeds[id].feeToken = feeToken;
         Update(id);
     }
 
@@ -58,7 +58,7 @@ contract Feedbase {
     }
 
     function setFee(uint64 id, uint fee) auth(id) {
-        if (address(feeds[id].fee_token) == 0) throw;
+        if (isAlwaysFree(id)) throw;
         feeds[id].fee = fee;
         Update(id);
     }
@@ -67,12 +67,12 @@ contract Feedbase {
         feeds[id].value = value;
         feeds[id].timestamp = block.timestamp;
         feeds[id].expiration = expiration;
-        feeds[id].fee_paid = false;
+        feeds[id].feePaid = false;
         Update(id);
     }
 
-    function transfer(uint64 id, address new_owner) auth(id) {
-        feeds[id].owner = new_owner;
+    function transfer(uint64 id, address newOwner) auth(id) {
+        feeds[id].owner = newOwner;
         Update(id);
     }
 
@@ -85,9 +85,9 @@ contract Feedbase {
 
         if (isExpired(id)) throw;
 
-        if (address(feed.fee_token) != 0 && !feed.fee_paid) {
-            feed.fee_token.transferFrom(msg.sender, feed.owner, feed.fee);
-            feed.fee_paid = true;
+        if (!isFeePaid(id) && !isAlwaysFree(id)) {
+            feed.feeToken.transferFrom(msg.sender, feed.owner, feed.fee);
+            feed.feePaid = true;
         }
 
         return feed.value;
@@ -103,7 +103,7 @@ contract Feedbase {
         return feeds[id].fee;
     }
     function getFeeToken(uint64 id) constant returns (ERC20) {
-        return feeds[id].fee_token;
+        return feeds[id].feeToken;
     }
 
     function getTimestamp(uint64 id) constant returns (uint) {
@@ -113,12 +113,16 @@ contract Feedbase {
         return feeds[id].expiration;
     }
     function isFeePaid(uint64 id) constant returns (bool) {
-        return feeds[id].fee_paid;
+        return feeds[id].feePaid;
+    }
+
+    function isNew(uint64 id) constant returns (bool) {
+        return feeds[id].timestamp == 0;
     }
     function isExpired(uint64 id) constant returns (bool) {
         return block.timestamp > feeds[id].expiration;
     }
-    function isNew(uint64 id) constant returns (bool) {
-        return feeds[id].timestamp == 0;
+    function isAlwaysFree(uint64 id) constant returns (bool) {
+        return address(feeds[id].feeToken) == 0;
     }
 }

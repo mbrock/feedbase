@@ -24,7 +24,7 @@ contract FeedbaseTest is Test {
     }
 
     function test_create() {
-        assertEq(uint(0), uint(id));
+        assertEq(uint(0), id);
         assertEq(uint(1), feedbase.create(dai));
         assertEq(uint(2), feedbase.create(dai));
     }
