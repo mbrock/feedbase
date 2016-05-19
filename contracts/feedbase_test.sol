@@ -103,7 +103,7 @@ contract FeedbaseTest is Test {
         expectEventsExact(feedbase);
         feedbase.setFee(id, 0);
         Update(id);
-        feedbase.setDescription(id, "foo");
+        feedbase.setName(id, "foo");
         Update(id);
         feedbase.update(id, 0x42, block.timestamp + 1);
         Update(id);

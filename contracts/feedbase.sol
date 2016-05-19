@@ -17,7 +17,7 @@ contract Feedbase {
 
     struct Feed {
         address owner;
-        bytes32 description;
+        bytes32 name;
         uint fee;
         ERC20 fee_token;
 
@@ -52,8 +52,8 @@ contract Feedbase {
         Update(id);
     }
 
-    function setDescription(uint64 id, bytes32 description) auth(id) {
-        feeds[id].description = description;
+    function setName(uint64 id, bytes32 name) auth(id) {
+        feeds[id].name = name;
         Update(id);
     }
 
@@ -96,8 +96,8 @@ contract Feedbase {
     function getOwner(uint64 id) constant returns (address) {
         return feeds[id].owner;
     }
-    function getDescription(uint64 id) constant returns (bytes32) {
-        return feeds[id].description;
+    function getName(uint64 id) constant returns (bytes32) {
+        return feeds[id].name;
     }
     function getFee(uint64 id) constant returns (uint) {
         return feeds[id].fee;
