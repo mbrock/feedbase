@@ -80,10 +80,13 @@ contract Feedbase {
     // For consumers
     //------------------------------------------------------------------
 
-    function read(uint64 id) returns (int256 value) {
-        var feed = feeds[id];
-
+    function read(uint64 id) returns (int256) {
         if (isExpired(id)) throw;
+        return readExpired(id);
+    }
+
+    function readExpired(uint64 id) returns (int256) {
+        var feed = feeds[id];
 
         if (!isFeePaid(id) && !isAlwaysFree(id)) {
             feed.feeToken.transferFrom(msg.sender, feed.owner, feed.fee);
@@ -123,6 +126,6 @@ contract Feedbase {
         return block.timestamp > feeds[id].expiration;
     }
     function isAlwaysFree(uint64 id) constant returns (bool) {
-        return address(feeds[id].feeToken) == 0;
+        return address(feeds[id].feeToken) == address(0);
     }
 }
