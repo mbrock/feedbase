@@ -21,7 +21,7 @@ contract Feedbase {
         uint fee;
         ERC20 fee_token;
 
-        bytes32 value;
+        int256 value;
         uint timestamp;
         uint expiration;
         bool fee_paid;
@@ -63,7 +63,7 @@ contract Feedbase {
         Update(id);
     }
 
-    function update(uint64 id, bytes32 value, uint expiration) auth(id) {
+    function update(uint64 id, int256 value, uint expiration) auth(id) {
         feeds[id].value = value;
         feeds[id].timestamp = block.timestamp;
         feeds[id].expiration = expiration;
@@ -80,7 +80,7 @@ contract Feedbase {
     // For consumers
     //------------------------------------------------------------------
 
-    function read(uint64 id) returns (bytes32 value) {
+    function read(uint64 id) returns (int256 value) {
         var feed = feeds[id];
 
         if (block.timestamp > feed.expiration) throw;

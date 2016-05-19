@@ -4,7 +4,7 @@ import "feedbase.sol";
 
 contract FeedbaseTester is Tester {
     // Type declaration needed to retrieve return value
-    function read(uint64 id) returns (bytes32 value) {
+    function read(uint64 id) returns (int256 value) {
         return Feedbase(_t).read(id);
     }
 }
@@ -31,7 +31,7 @@ contract FeedbaseTest is Test {
 
     function test_read_free_feed() {
         feedbase.update(id, 0x42, block.timestamp + 1);
-        assertEq32(tester.read(id), 0x42);
+        assertEq(tester.read(id), 0x42);
     }
 
     function testFail_set_fee_without_token() {
@@ -53,7 +53,7 @@ contract FeedbaseTest is Test {
         var value = tester.read(id);
         assertEq(dai.balanceOf(this) - initial, 100);
         assertEq(dai.balanceOf(tester), 0);
-        assertEq32(value, 0x42);
+        assertEq(value, 0x42);
     }
 
     function testFail_read_paid_feed() {
@@ -84,8 +84,8 @@ contract FeedbaseTest is Test {
         var post2 = dai.balanceOf(this);
         assertEq(post1 - pre, 100);
         assertEq(post2 - post1, 0);
-        assertEq32(value1, 0x42);
-        assertEq32(value2, 0x42);
+        assertEq(value1, 0x42);
+        assertEq(value2, 0x42);
     }
 
     function testFail_read_expired_feed() {
@@ -96,7 +96,7 @@ contract FeedbaseTest is Test {
     function test_transfer() {
         feedbase.transfer(id, tester);
         Feedbase(tester).update(id, 0x123, block.timestamp + 1);
-        assertEq32(feedbase.read(id), 0x123);
+        assertEq(feedbase.read(id), 0x123);
     }
 
     function test_events() {
