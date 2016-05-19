@@ -1,0 +1,34 @@
+#!/usr/bin/env node
+var feedbase = require("../lib/feedbase.js")
+var web3 = require("../lib/web3.js")
+
+web3.eth.filter({
+  address: feedbase.address,
+}, (error, { topics: [event, id] }) => {
+  console.log(new Date().toISOString())
+
+  if (feedbase.isNew(id)) {
+    console.log(`Feed #${web3.toDecimal(id)} created:`)
+    console.log(`  Owner:       ${feedbase.getOwner(id)}`)
+
+    if (!feedbase.isAlwaysFree(id)) {
+      console.log(`  Fee token:   ${feedbase.getFeeToken(id)}`)
+    }
+  } else {
+    console.log(`Feed #${web3.toDecimal(id)} updated:`)
+    console.log(`  Owner:       ${feedbase.getOwner(id)}`)
+    console.log(`  Name:        ${web3.toAscii(feedbase.getName(id))}`)
+
+    if (!feedbase.isAlwaysFree(id)) {
+      console.log(`  Fee token:   ${feedbase.getFeeToken(id)}`)
+      console.log(`  Fee:         ${feedbase.getFee(id)}`)
+    }
+
+    console.log(`  Value:       ${web3.toDecimal(feedbase.read.call(id))}`)
+    console.log(`  Timestamp:   ${feedbase.getTimestamp(id)}`)
+    console.log(`  Expiration:  ${feedbase.getExpiration(id)}`)
+    console.log(`  Expired:     ${feedbase.isExpired(id)}`)
+  }
+
+  console.log()
+})

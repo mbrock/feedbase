@@ -1,0 +1,26 @@
+#!/usr/bin/env node
+var feedbase = require("../lib/feedbase.js")
+var wait = require("../lib/wait.js")
+var web3 = require("../lib/web3.js")
+
+var [feedID, newFee] = process.argv.slice(2)
+
+if (feedbase.isAlwaysFree(feedID)) {
+  console.log(`Cannot set fee of non-paid feed #${feedID}.`)
+  process.exit(1)
+}
+
+console.log(`Changing fee of feed #${feedID}...`)
+console.log(`  New fee:     ${newFee}`)
+
+wait(id => {
+  return id == feedID
+    && web3.toDecimal(feedbase.getFee(id)) == newFee
+}, id => {
+  console.log("Successfully changed fee.")
+}, () => {
+  console.log("Failed to change fee (operation timed out).")
+  process.exit(1)
+})
+
+feedbase.setFee(feedID, newFee)

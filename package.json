@@ -1,0 +1,6 @@
+{
+  "name": "feedbase",
+  "dependencies": {
+    "web3": "^0.16.0"
+  }
+}

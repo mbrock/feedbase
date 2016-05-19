@@ -1,0 +1,21 @@
+#!/usr/bin/env node
+var feedbase = require("../lib/feedbase.js")
+var wait = require("../lib/wait.js")
+var web3 = require("../lib/web3.js")
+
+var [feedID, newName] = process.argv.slice(2)
+
+console.log(`Changing name of feed #${feedID}...`)
+console.log(`  New name:    ${newName}`)
+
+wait(id => {
+  return id == feedID
+    && web3.toAscii(feedbase.getName(id)).replace(/\0/g, "") == newName
+}, id => {
+  console.log("Successfully updated feed name.")
+}, () => {
+  console.log("Failed to change feed name (operation timed out).")
+  process.exit(1)
+})
+
+feedbase.setName(feedID, newName)
