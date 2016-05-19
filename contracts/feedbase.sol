@@ -1,15 +1,14 @@
 //------------------------------------------------------------------
 // feedbase -- open-access price feed services on Ethereum
 //------------------------------------------------------------------
-// This simple contract enables anyone to claim a feed ID, which can
-// be used to publish an arbitrary sequence of values over time.
+// This simple contract enables anyone to create "price feeds" which
+// can be used to publish an arbitrary sequence of values over time.
 //
 // The feeds can be updated by their owners at any time, and expiry
 // dates can be set to prevent consumers from reading stale data.
 //
-// Feed owners are also able to charge a fee, which is paid by the
-// first caller to read each newly published value.
-//
+// The owner of a price feed can also choose to charge a fee, which
+// is paid by the first caller to read each newly published value.
 
 import "dappsys/token/erc20.sol";
 
@@ -47,7 +46,7 @@ contract Feedbase {
     // For feed owners
     //------------------------------------------------------------------
 
-    function claim(ERC20 fee_token) returns (uint64 id) {
+    function create(ERC20 fee_token) returns (uint64 id) {
         id = getNextID();
         feeds[id].owner = msg.sender;
         feeds[id].fee_token = fee_token;
@@ -64,7 +63,7 @@ contract Feedbase {
         Update(id);
     }
 
-    function setValue(uint64 id, bytes32 value, uint expiration) auth(id) {
+    function update(uint64 id, bytes32 value, uint expiration) auth(id) {
         feeds[id].value = value;
         feeds[id].timestamp = block.timestamp;
         feeds[id].expiration = expiration;
@@ -81,7 +80,7 @@ contract Feedbase {
     // For consumers
     //------------------------------------------------------------------
 
-    function getValue(uint64 id) returns (bytes32 value) {
+    function read(uint64 id) returns (bytes32 value) {
         var feed = feeds[id];
 
         if (block.timestamp > feed.expiration) {
@@ -96,26 +95,26 @@ contract Feedbase {
         return feed.value;
     }
 
-    function getOwner(uint64 id) returns (address) {
+    function getOwner(uint64 id) constant returns (address) {
         return feeds[id].owner;
     }
-    function getDescription(uint64 id) returns (bytes32) {
+    function getDescription(uint64 id) constant returns (bytes32) {
         return feeds[id].description;
     }
-    function getFee(uint64 id) returns (uint) {
+    function getFee(uint64 id) constant returns (uint) {
         return feeds[id].fee;
     }
-    function getFeeToken(uint64 id) returns (ERC20) {
+    function getFeeToken(uint64 id) constant returns (ERC20) {
         return feeds[id].fee_token;
     }
 
-    function getTimestamp(uint64 id) returns (uint) {
+    function getTimestamp(uint64 id) constant returns (uint) {
         return feeds[id].timestamp;
     }
-    function getExpiration(uint64 id) returns (uint) {
+    function getExpiration(uint64 id) constant returns (uint) {
         return feeds[id].expiration;
     }
-    function isFeePaid(uint64 id) returns (bool) {
+    function isFeePaid(uint64 id) constant returns (bool) {
         return feeds[id].fee_paid;
     }
 }

@@ -4,8 +4,8 @@ import "feedbase.sol";
 
 contract FeedbaseTester is Tester {
     // Type declaration needed to retrieve return value
-    function getValue(uint64 id) returns (bytes32 value) {
-        return Feedbase(_t).getValue(id);
+    function read(uint64 id) returns (bytes32 value) {
+        return Feedbase(_t).read(id);
     }
 }
 
@@ -20,22 +20,22 @@ contract FeedbaseTest is Test {
 
     function setUp() {
         tester._target(feedbase);
-        id = feedbase.claim(dai);
+        id = feedbase.create(dai);
     }
 
-    function test_claim() {
+    function test_create() {
         assertEq(uint(0), uint(id));
-        assertEq(uint(1), feedbase.claim(dai));
-        assertEq(uint(2), feedbase.claim(dai));
+        assertEq(uint(1), feedbase.create(dai));
+        assertEq(uint(2), feedbase.create(dai));
     }
 
-    function test_get_free_feed() {
-        feedbase.setValue(id, 0x42, block.timestamp + 1);
-        assertEq32(tester.getValue(id), 0x42);
+    function test_read_free_feed() {
+        feedbase.update(id, 0x42, block.timestamp + 1);
+        assertEq32(tester.read(id), 0x42);
     }
 
-    function test_get_paid_feed() {
-        feedbase.setValue(id, 0x42, block.timestamp + 1);
+    function test_read_paid_feed() {
+        feedbase.update(id, 0x42, block.timestamp + 1);
         feedbase.setFee(id, 100);
         dai.transfer(tester, 100);
 
@@ -45,14 +45,14 @@ contract FeedbaseTest is Test {
         tester._target(feedbase);
         assertEq(dai.balanceOf(tester), 100);
         var initial = dai.balanceOf(this);
-        var value = tester.getValue(id);
+        var value = tester.read(id);
         assertEq(dai.balanceOf(this) - initial, 100);
         assertEq(dai.balanceOf(tester), 0);
         assertEq32(value, 0x42);
     }
     
-    function testFail_get_paid_feed() {
-        feedbase.setValue(id, 0x42, block.timestamp + 1);
+    function testFail_read_paid_feed() {
+        feedbase.update(id, 0x42, block.timestamp + 1);
         feedbase.setFee(id, 100);
         dai.transfer(tester, 99);
 
@@ -60,11 +60,11 @@ contract FeedbaseTest is Test {
         DSToken(tester).approve(feedbase, 100);
 
         tester._target(feedbase);
-        tester.getValue(id);
+        tester.read(id);
     }
     
-    function test_get_paid_feed_twice() {
-        feedbase.setValue(id, 0x42, block.timestamp + 1);
+    function test_read_paid_feed_twice() {
+        feedbase.update(id, 0x42, block.timestamp + 1);
         feedbase.setFee(id, 100);
         dai.transfer(tester, 100);
 
@@ -73,9 +73,9 @@ contract FeedbaseTest is Test {
 
         tester._target(feedbase);
         var pre = dai.balanceOf(this);
-        var value1 = tester.getValue(id);
+        var value1 = tester.read(id);
         var post1 = dai.balanceOf(this);
-        var value2 = tester.getValue(id);
+        var value2 = tester.read(id);
         var post2 = dai.balanceOf(this);
         assertEq(post1 - pre, 100);
         assertEq(post2 - post1, 0);
@@ -83,15 +83,15 @@ contract FeedbaseTest is Test {
         assertEq32(value2, 0x42);
     }
     
-    function testFail_get_expired_feed() {
-        feedbase.setValue(id, 0x42, block.timestamp - 1);
-        feedbase.getValue(id);
+    function testFail_read_expired_feed() {
+        feedbase.update(id, 0x42, block.timestamp - 1);
+        feedbase.read(id);
     }
     
     function test_transfer() {
         feedbase.transfer(id, tester);
-        Feedbase(tester).setValue(id, 0x123, block.timestamp + 1);
-        assertEq32(feedbase.getValue(id), 0x123);
+        Feedbase(tester).update(id, 0x123, block.timestamp + 1);
+        assertEq32(feedbase.read(id), 0x123);
     }
     
     function test_events() {
@@ -100,11 +100,11 @@ contract FeedbaseTest is Test {
         Update(id);
         feedbase.setDescription(id, "foo");
         Update(id);
-        feedbase.setValue(id, 0x42, block.timestamp + 1);
+        feedbase.update(id, 0x42, block.timestamp + 1);
         Update(id);
         feedbase.transfer(id, tester);
         Update(id);
-        var id2 = feedbase.claim(dai);
+        var id2 = feedbase.create(dai);
         Update(id2);
     }
 }
