@@ -83,7 +83,7 @@ contract Feedbase {
     function read(uint64 id) returns (int256 value) {
         var feed = feeds[id];
 
-        if (block.timestamp > feed.expiration) throw;
+        if (isExpired(id)) throw;
 
         if (address(feed.fee_token) != 0 && !feed.fee_paid) {
             feed.fee_token.transferFrom(msg.sender, feed.owner, feed.fee);
@@ -114,5 +114,8 @@ contract Feedbase {
     }
     function isFeePaid(uint64 id) constant returns (bool) {
         return feeds[id].fee_paid;
+    }
+    function isExpired(uint64 id) constant returns (bool) {
+        return block.timestamp > feeds[id].expiration;
     }
 }
