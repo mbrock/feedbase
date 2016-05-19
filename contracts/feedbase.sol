@@ -36,9 +36,7 @@ contract Feedbase {
     }
 
     modifier auth(uint64 id) {
-        if (msg.sender != feeds[id].owner) {
-          throw;
-        }
+        if (msg.sender != feeds[id].owner) throw;
         _
     }
 
@@ -46,6 +44,7 @@ contract Feedbase {
     // For feed owners
     //------------------------------------------------------------------
 
+    function create() returns (uint64) { return create(ERC20(0)); }
     function create(ERC20 fee_token) returns (uint64 id) {
         id = getNextID();
         feeds[id].owner = msg.sender;
@@ -59,6 +58,7 @@ contract Feedbase {
     }
 
     function setFee(uint64 id, uint fee) auth(id) {
+        if (address(feeds[id].fee_token) == 0) throw;
         feeds[id].fee = fee;
         Update(id);
     }
@@ -83,9 +83,7 @@ contract Feedbase {
     function read(uint64 id) returns (bytes32 value) {
         var feed = feeds[id];
 
-        if (block.timestamp > feed.expiration) {
-            throw;
-        }
+        if (block.timestamp > feed.expiration) throw;
 
         if (address(feed.fee_token) != 0 && !feed.fee_paid) {
             feed.fee_token.transferFrom(msg.sender, feed.owner, feed.fee);

@@ -11,7 +11,7 @@ contract FeedbaseTester is Tester {
 
 contract FeedbaseTest is Test {
     event Update(uint64 indexed id);
-    
+
     Feedbase feedbase = new Feedbase();
     DSToken dai = new DSTokenBase(1000);
     FeedbaseTester tester = new FeedbaseTester();
@@ -34,6 +34,11 @@ contract FeedbaseTest is Test {
         assertEq32(tester.read(id), 0x42);
     }
 
+    function testFail_set_fee_without_token() {
+        var id2 = feedbase.create();
+        feedbase.setFee(id2, 100);
+    }
+
     function test_read_paid_feed() {
         feedbase.update(id, 0x42, block.timestamp + 1);
         feedbase.setFee(id, 100);
@@ -50,7 +55,7 @@ contract FeedbaseTest is Test {
         assertEq(dai.balanceOf(tester), 0);
         assertEq32(value, 0x42);
     }
-    
+
     function testFail_read_paid_feed() {
         feedbase.update(id, 0x42, block.timestamp + 1);
         feedbase.setFee(id, 100);
@@ -62,7 +67,7 @@ contract FeedbaseTest is Test {
         tester._target(feedbase);
         tester.read(id);
     }
-    
+
     function test_read_paid_feed_twice() {
         feedbase.update(id, 0x42, block.timestamp + 1);
         feedbase.setFee(id, 100);
@@ -82,18 +87,18 @@ contract FeedbaseTest is Test {
         assertEq32(value1, 0x42);
         assertEq32(value2, 0x42);
     }
-    
+
     function testFail_read_expired_feed() {
         feedbase.update(id, 0x42, block.timestamp - 1);
         feedbase.read(id);
     }
-    
+
     function test_transfer() {
         feedbase.transfer(id, tester);
         Feedbase(tester).update(id, 0x123, block.timestamp + 1);
         assertEq32(feedbase.read(id), 0x123);
     }
-    
+
     function test_events() {
         expectEventsExact(feedbase);
         feedbase.setFee(id, 0);
