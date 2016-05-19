@@ -118,4 +118,7 @@ contract Feedbase {
     function isExpired(uint64 id) constant returns (bool) {
         return block.timestamp > feeds[id].expiration;
     }
+    function isNew(uint64 id) constant returns (bool) {
+        return feeds[id].timestamp == 0;
+    }
 }
