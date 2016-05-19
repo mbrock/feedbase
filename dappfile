@@ -5,3 +5,9 @@ layout:
   build_dir: build
 dependencies:
   dappsys: 0.3.0-dev
+environments:
+  morden:
+    objects:
+      feedbase:
+        class: Feedbase
+        address: '0xde515df203d0671281407bf9def7863981647e17'
