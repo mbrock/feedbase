@@ -9,9 +9,7 @@ contract FeedbaseTester is Tester {
     }
 }
 
-contract FeedbaseTest is Test {
-    event Update(uint64 indexed id);
-
+contract FeedbaseTest is Test, FeedbaseEvents {
     Feedbase feedbase = new Feedbase();
     DSToken dai = new DSTokenBase(1000);
     FeedbaseTester tester = new FeedbaseTester();
@@ -101,15 +99,25 @@ contract FeedbaseTest is Test {
 
     function test_events() {
         expectEventsExact(feedbase);
+        
         feedbase.setFee(id, 0);
-        Update(id);
+        Configure(id);
+        
         feedbase.setName(id, "foo");
-        Update(id);
+        Configure(id);
+        
         feedbase.update(id, 0x42, block.timestamp + 1);
         Update(id);
+        
+        feedbase.read(id);
+        Pay(id);
+        
+        feedbase.read(id);
+        
         feedbase.transfer(id, tester);
-        Update(id);
+        Configure(id);
+        
         var id2 = feedbase.create(dai);
-        Update(id2);
+        Create(id2);
     }
 }
