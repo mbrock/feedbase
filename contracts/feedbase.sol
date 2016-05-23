@@ -22,7 +22,9 @@ contract FeedbaseEvents {
 contract Feedbase is FeedbaseEvents {
     struct Feed {
         address  owner;
-        bytes32  name;
+        bytes32  type_;        // e.g. "ufixed128x128"
+        bytes32  symbol;       // e.g. "ETHUSD"
+        bytes32  comment;
         uint     fee;
         ERC20    feeToken;
 
@@ -60,8 +62,15 @@ contract Feedbase is FeedbaseEvents {
         return create(ERC20(0));
     }
 
-    function setName(uint64 id, bytes32 name) auth(id) {
-        feeds[id].name = name;
+    function configure(
+        uint64 id,
+        bytes32 type_,
+        bytes32 symbol,
+        bytes32 comment
+    ) auth(id) {
+        feeds[id].type_ = type_;
+        feeds[id].symbol = symbol;
+        feeds[id].comment = comment;
         Configure(id);
     }
 
@@ -107,8 +116,12 @@ contract Feedbase is FeedbaseEvents {
 
     function getOwner(uint64 id)
     constant returns (address) { return feeds[id].owner; }
-    function getName(uint64 id)
-    constant returns (bytes32) { return feeds[id].name; }
+    function getType(uint64 id)
+    constant returns (bytes32) { return feeds[id].type_; }
+    function getSymbol(uint64 id)
+    constant returns (bytes32) { return feeds[id].symbol; }
+    function getComment(uint64 id)
+    constant returns (bytes32) { return feeds[id].comment; }
     function getFee(uint64 id)
     constant returns (uint)    { return feeds[id].fee; }
     function getFeeToken(uint64 id)
@@ -120,6 +133,11 @@ contract Feedbase is FeedbaseEvents {
     constant returns (uint)    { return feeds[id].expiration; }
     function isFeePaid(uint64 id)
     constant returns (bool)    { return feeds[id].feePaid; }
+
+    function read_int(uint64 id)
+    returns (int) { return int(read(id)); }
+    function read_uint(uint64 id)
+    returns (uint) { return uint(read(id)); }
 
     function isExpired(uint64 id) constant returns (bool) {
         return block.timestamp > feeds[id].expiration;

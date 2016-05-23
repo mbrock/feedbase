@@ -1,0 +1,27 @@
+#!/usr/bin/env node
+var feedbase = require("../lib/feedbase.js")
+var util = require("../lib/util.js")
+var wait = require("../lib/wait.js")
+var web3 = require("../lib/web3.js")
+
+var [id, type, symbol, comment] = process.argv.slice(2)
+
+console.log(`configure`)
+console.log(`id          ${id}`)
+console.log(`type        ${type || "-"}`)
+console.log(`symbol      ${symbol || "-"}`)
+console.log(`comment     ${comment || "-"}`)
+
+wait(x => {
+  return x == id
+    && util.toString(feedbase.getType(id)) == (type || "-")
+    && util.toString(feedbase.getSymbol(id)) == (symbol || "-")
+    && util.toString(feedbase.getComment(id)) == (comment || "-")
+}, id => {
+  console.log("ok")
+}, () => {
+  console.error("error: failed to configure feed (operation timed out)")
+  process.exit(1)
+})
+
+feedbase.configure(id, type, symbol, comment)

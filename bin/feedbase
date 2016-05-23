@@ -1,0 +1,9 @@
+#!/bin/sh
+if ! [[ $FEEDBASE_INITALIZED ]]; then
+  : ${FEEDBASERC:=~/.feedbaserc}
+  [[ -e $FEEDBASERC ]] && . $FEEDBASERC
+  which feedbase &>/dev/null || PATH+=:`dirname $0`
+  export FEEDBASE_INITIALIZED=1
+fi
+
+exec $0-"$@"

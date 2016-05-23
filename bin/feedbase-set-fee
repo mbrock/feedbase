@@ -3,24 +3,25 @@ var feedbase = require("../lib/feedbase.js")
 var wait = require("../lib/wait.js")
 var web3 = require("../lib/web3.js")
 
-var [feedID, newFee] = process.argv.slice(2)
+var [id, value] = process.argv.slice(2)
 
-if (feedbase.isAlwaysFree(feedID)) {
-  console.log(`Cannot set fee of non-paid feed #${feedID}.`)
+if (feedbase.isAlwaysFree(id)) {
+  console.error(`error: cannot set fee of non-paid feed`)
   process.exit(1)
 }
 
-console.log(`Changing fee of feed #${feedID}...`)
-console.log(`  New fee:     ${newFee}`)
+console.log(`set-fee`)
+console.log(`id          ${id}`)
+console.log(`fee         ${value}`)
 
-wait(id => {
-  return id == feedID
-    && web3.toDecimal(feedbase.getFee(id)) == newFee
+wait(x => {
+  return x == id
+    && web3.toDecimal(feedbase.getFee(id)) == value
 }, id => {
-  console.log("Successfully changed fee.")
+  console.log("ok")
 }, () => {
-  console.log("Failed to change fee (operation timed out).")
+  console.error("error: failed to set fee (operation timed out)")
   process.exit(1)
 })
 
-feedbase.setFee(feedID, newFee)
+feedbase.setFee(id, value)

@@ -1,0 +1,18 @@
+#!/usr/bin/env node
+var feedbase = require("../lib/feedbase.js")
+var util = require("../lib/util.js")
+var web3 = require("../lib/web3.js")
+
+var id = process.argv[2]
+
+console.log(`id          ${id}`)
+console.log(`owner       ${feedbase.getOwner(id)}`)
+console.log(`symbol      ${util.toString(feedbase.getSymbol(id))}`)
+console.log(`type        ${util.toString(feedbase.getType(id))}`)
+console.log(`comment     ${util.toString(feedbase.getComment(id))}`)
+console.log(`fee-token   ${feedbase.getFeeToken(id)}`)
+console.log(`fee         ${feedbase.getFee(id)}`)
+console.log(`value       ${util.toBytes32(feedbase.read.call(id))}`)
+console.log(`timestamp   ${feedbase.getTimestamp(id)}`)
+console.log(`expiration  ${feedbase.getExpiration(id)}`)
+console.log(`expired     ${feedbase.isExpired(id)}`)

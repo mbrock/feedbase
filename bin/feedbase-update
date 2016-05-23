@@ -1,22 +1,29 @@
 #!/usr/bin/env node
 var feedbase = require("../lib/feedbase.js")
+var util = require("../lib/util.js")
 var wait = require("../lib/wait.js")
 var web3 = require("../lib/web3.js")
 
-var [feedID, newValue, newExpiration] = process.argv.slice(2)
+var [id, value, expiration] = process.argv.slice(2)
 
-console.log(`Updating feed #${feedID}...`)
-console.log(`  New value:   ${newValue}`)
-console.log(`  Expiration:  ${newExpiration}`)
+if (!/^0x[0-9a-f]{64}$/.test(value)) {
+  console.error(`error: bad value: ${value}`)
+  process.exit(1)
+}
 
-wait(id => {
-  return id == feedID
-    && feedbase.readExpired.call(id) == newValue
-    && feedbase.getExpiration(id) == newExpiration
+console.log(`update`)
+console.log(`id          ${id}`)
+console.log(`value       ${value}`)
+console.log(`expiration  ${expiration}`)
+
+wait(x => {
+  return x == id
+    && util.toBytes32(feedbase.readExpired.call(id)) == value
+    && feedbase.getExpiration(id) == expiration
 }, id => {
-  console.log("Successfully updated feed.")
+  console.log("ok")
 }, () => {
-  console.log("Failed to update feed (operation timed out).")
+  console.error("error: failed to update feed (operation timed out)")
   process.exit(1)
 })
 

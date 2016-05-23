@@ -3,26 +3,25 @@ var feedbase = require("../lib/feedbase.js")
 var wait = require("../lib/wait.js")
 var web3 = require("../lib/web3.js")
 
-var feeToken = process.argv[2]
+var feeToken = process.argv[2] ||
+  "0x0000000000000000000000000000000000000000"
 
-if (!feeToken) {
-  console.log(`Creating non-paid feed...`)
-} else if (/^0x[0-9a-f]{40}$/.test(feeToken)) {
-  console.log(`Creating paid feed...`)
-  console.log(`  Fee token:   ${feeToken}`)
-} else {
-  console.log(`Bad fee token address format: ${feeToken}`)
+if (!/^0x[0-9a-f]{40}$/.test(feeToken)) {
+  console.log(`error: bad token address: ${feeToken}`)
   process.exit(1)
 }
 
+console.log(`create`)
+console.log(`fee-token   ${feeToken}`)
+
 wait(id => {
   return feedbase.getOwner(id) == web3.eth.defaultAccount
-    && (!feeToken && feedbase.isAlwaysFree(id)
-        || feedbase.getFeeToken(id) == feeToken)
+    && feedbase.getFeeToken(id) == feeToken
 }, id => {
-  console.log(`Successfully created feed #${id}.`)
+  console.log(`id          ${id}`)
+  console.log(`ok`)
 }, () => {
-  console.log("Failed to create feed (operation timed out).")
+  console.error("error: failed to create feed (operation timed out)")
   process.exit(1)
 })
 

@@ -22,9 +22,15 @@ contract FeedbaseTest is Test, FeedbaseEvents {
     }
 
     function test_create() {
-        assertEq(uint(0), id);
-        assertEq(uint(1), feedbase.create(dai));
-        assertEq(uint(2), feedbase.create(dai));
+        assertEq(id, uint(0));
+        assertEq(feedbase.create(dai), uint(1));
+    }
+
+    function test_configure() {
+        feedbase.configure(id, "uint", "ETHUSD", "foo");
+        assertEq32("uint", feedbase.getType(id));
+        assertEq32("ETHUSD", feedbase.getSymbol(id));
+        assertEq32("foo", feedbase.getComment(id));
     }
 
     function test_read_free_feed() {
@@ -99,24 +105,17 @@ contract FeedbaseTest is Test, FeedbaseEvents {
 
     function test_events() {
         expectEventsExact(feedbase);
-        
         feedbase.setFee(id, 0);
         Configure(id);
-        
-        feedbase.setName(id, "foo");
+        feedbase.configure(id, "uint", "ETHUSD", "foo");
         Configure(id);
-        
         feedbase.update(id, 0x42, block.timestamp + 1);
         Update(id);
-        
         feedbase.read(id);
         Pay(id);
-        
         feedbase.read(id);
-        
         feedbase.transfer(id, tester);
         Configure(id);
-        
         var id2 = feedbase.create(dai);
         Create(id2);
     }

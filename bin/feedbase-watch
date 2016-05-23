@@ -1,19 +1,11 @@
 #!/usr/bin/env node
+var execFileSync = require("child_process").execFileSync
 var feedbase = require("../lib/feedbase.js")
 var web3 = require("../lib/web3.js")
 
 web3.eth.filter({
   address: feedbase.address,
 }, (error, { topics: [event, id] }) => {
-  console.log(new Date().toISOString())
-  console.log(`Feed #${web3.toDecimal(id)} updated:`)
-  console.log(`  Owner:       ${feedbase.getOwner(id)}`)
-  console.log(`  Name:        ${web3.toAscii(feedbase.getName(id))}`)
-  console.log(`  Fee token:   ${feedbase.getFeeToken(id)}`)
-  console.log(`  Fee:         ${feedbase.getFee(id)}`)
-  console.log(`  Value:       ${web3.toDecimal(feedbase.read.call(id))}`)
-  console.log(`  Timestamp:   ${feedbase.getTimestamp(id)}`)
-  console.log(`  Expiration:  ${feedbase.getExpiration(id)}`)
-  console.log(`  Expired:     ${feedbase.isExpired(id)}`)
+  execFileSync("feedbase", ["info", id], { stdio: "inherit" })
   console.log()
 })
