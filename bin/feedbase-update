@@ -27,4 +27,4 @@ wait(x => {
   process.exit(1)
 })
 
-feedbase.update(feedID, newValue, newExpiration)
+feedbase.update(id, value, expiration)
