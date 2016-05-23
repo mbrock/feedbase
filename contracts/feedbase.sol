@@ -26,7 +26,7 @@ contract Feedbase is FeedbaseEvents {
         uint     fee;
         ERC20    feeToken;
 
-        int256   value;
+        bytes32  value;
         uint     timestamp;
         uint     expiration;
         bool     feePaid;
@@ -64,13 +64,14 @@ contract Feedbase is FeedbaseEvents {
         feeds[id].name = name;
         Configure(id);
     }
+
     function setFee(uint64 id, uint fee) auth(id) {
         if (isAlwaysFree(id)) throw;
         feeds[id].fee = fee;
         Configure(id);
     }
 
-    function update(uint64 id, int256 value, uint expiration) auth(id) {
+    function update(uint64 id, bytes32 value, uint expiration) auth(id) {
         feeds[id].value = value;
         feeds[id].timestamp = block.timestamp;
         feeds[id].expiration = expiration;
@@ -87,12 +88,12 @@ contract Feedbase is FeedbaseEvents {
     // For consumers
     //------------------------------------------------------------------
 
-    function read(uint64 id) returns (int256) {
+    function read(uint64 id) returns (bytes32) {
         if (isExpired(id)) throw;
         return readExpired(id);
     }
 
-    function readExpired(uint64 id) returns (int256) {
+    function readExpired(uint64 id) returns (bytes32) {
         var feed = feeds[id];
 
         if (!isFeePaid(id) && !isAlwaysFree(id)) {
