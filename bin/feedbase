@@ -1,9 +1,41 @@
-#!/bin/sh
-if ! [[ $FEEDBASE_INITALIZED ]]; then
-  : ${FEEDBASERC:=~/.feedbaserc}
-  [[ -e $FEEDBASERC ]] && . $FEEDBASERC
-  which feedbase &>/dev/null || PATH+=:`dirname $0`
-  export FEEDBASE_INITIALIZED=1
-fi
+#!/usr/bin/env node
+var command = process.argv[2]
+var args = process.argv.slice(3)
+var feedbase = require("..")()
 
-exec $0-"$@"
+switch (command) {
+case "claim":
+  feedbase.claim(args[0])
+  feedbase.filter({}, (error, id) => {
+    if (error) throw error
+    if (feedbase.owner(id) == feedbase.account) {
+      console.log(feedbase.inspect(id))
+      process.exit(0)
+    }
+  })
+  setTimeout(() => {
+    console.error("error: timeout")
+    process.exit(1)
+  }, 300 * 1000)
+  break
+case "inspect":
+  console.log(JSON.stringify(feedbase.inspect(args[0]), null, 2))
+  break
+case "publish":
+  feedbase.publish(args[0], args[1], args[2])
+  break
+case "set-description":
+  feedbase.setDescription(args[0], args[1])
+  break
+case "set-fee":
+  feedbase.setFee(args[0], args[1])
+  break
+case "watch":
+  feedbase.filter({}, (error, id) => {
+    console.log(JSON.stringify(feedbase.inspect(id), null, 2))
+  })
+  break
+default:
+  console.error("error: unknown command: " + command)
+  process.exit(1)
+}

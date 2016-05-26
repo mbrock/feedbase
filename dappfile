@@ -10,4 +10,4 @@ environments:
     objects:
       feedbase:
         class: Feedbase
-        address: '0xfbad9cc3112f5afca348002a7632f0696ec9345e'
+        address: '0xcb43e0a4cffd48607d9dfe062127f9c6e72ff9d6'

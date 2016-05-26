@@ -1,6 +1,0 @@
-#!/usr/bin/env node
-var feedbase = require("../lib/feedbase.js")
-var util = require("../lib/util.js")
-var web3 = require("../lib/web3.js")
-
-console.log(util.toBytes32(feedbase.readExpired.call(process.argv[2])))

@@ -18,31 +18,31 @@ contract FeedbaseTest is Test, FeedbaseEvents {
 
     function setUp() {
         tester._target(feedbase);
-        id = feedbase.create(dai);
+        id = feedbase.claim(dai);
     }
 
-    function test_create() {
-        assertEq(id, uint(0));
-        assertEq(feedbase.create(dai), uint(1));
+    function test_claim() {
+        assertEq(id, uint(1));
+        assertEq(feedbase.claim(dai), uint(2));
     }
 
     function test_set_description() {
         feedbase.setDescription(id, "foo");
-        assertEq32("foo", feedbase.getDescription(id));
+        assertEq32("foo", feedbase.description(id));
     }
 
     function test_read_free_feed() {
-        feedbase.update(id, 0x42, block.timestamp + 1);
+        feedbase.publish(id, 0x42, block.timestamp + 1);
         assertEq32(tester.read(id), 0x42);
     }
 
     function testFail_set_fee_without_token() {
-        var id2 = feedbase.create();
+        var id2 = feedbase.claim();
         feedbase.setFee(id2, 100);
     }
 
     function test_read_paid_feed() {
-        feedbase.update(id, 0x42, block.timestamp + 1);
+        feedbase.publish(id, 0x42, block.timestamp + 1);
         feedbase.setFee(id, 100);
         dai.transfer(tester, 100);
 
@@ -59,7 +59,7 @@ contract FeedbaseTest is Test, FeedbaseEvents {
     }
 
     function testFail_read_paid_feed() {
-        feedbase.update(id, 0x42, block.timestamp + 1);
+        feedbase.publish(id, 0x42, block.timestamp + 1);
         feedbase.setFee(id, 100);
         dai.transfer(tester, 99);
 
@@ -71,7 +71,7 @@ contract FeedbaseTest is Test, FeedbaseEvents {
     }
 
     function test_read_paid_feed_twice() {
-        feedbase.update(id, 0x42, block.timestamp + 1);
+        feedbase.publish(id, 0x42, block.timestamp + 1);
         feedbase.setFee(id, 100);
         dai.transfer(tester, 100);
 
@@ -91,13 +91,13 @@ contract FeedbaseTest is Test, FeedbaseEvents {
     }
 
     function testFail_read_expired_feed() {
-        feedbase.update(id, 0x42, block.timestamp - 1);
+        feedbase.publish(id, 0x42, block.timestamp - 1);
         feedbase.read(id);
     }
 
     function test_transfer() {
         feedbase.transfer(id, tester);
-        Feedbase(tester).update(id, 0x123, block.timestamp + 1);
+        Feedbase(tester).publish(id, 0x123, block.timestamp + 1);
         assertEq32(feedbase.read(id), 0x123);
     }
 
@@ -107,14 +107,14 @@ contract FeedbaseTest is Test, FeedbaseEvents {
         Configure(id);
         feedbase.setDescription(id, "foo");
         Configure(id);
-        feedbase.update(id, 0x42, block.timestamp + 1);
-        Update(id);
+        feedbase.publish(id, 0x42, block.timestamp + 1);
+        Publish(id);
         feedbase.read(id);
         Pay(id);
         feedbase.read(id);
         feedbase.transfer(id, tester);
         Configure(id);
-        var id2 = feedbase.create(dai);
-        Create(id2);
+        var id2 = feedbase.claim(dai);
+        Claim(id2);
     }
 }
