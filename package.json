@@ -1,6 +1,6 @@
 {
   "name": "feedbase",
-  "version": "0.2-dev",
+  "version": "0.2.0",
   "bin": "bin/feedbase",
   "main": "lib/feedbase.js",
   "dependencies": {

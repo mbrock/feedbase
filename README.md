@@ -16,7 +16,7 @@ Installation
 
 Feedbase can be installed using npm:
 
-    $ npm install -g https://github.com/nexusdev/feedbase
+    $ npm install -g feedbase
 
 By default, Feedbase connects to the local Ethereum node on port 8545
 and uses the coinbase account as the default account.  To change this,

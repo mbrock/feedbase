@@ -15,7 +15,7 @@ dapple['feedbase'] = (function builder () {
         'objects': {
           'feedbase': {
             'class': 'Feedbase',
-            'address': '0xcb43e0a4cffd48607d9dfe062127f9c6e72ff9d6'
+            'address': '0x674c618ac80e497b60fc2b06be8359cffa50c546'
           }
         }
       }
@@ -52,7 +52,7 @@ dapple['feedbase'] = (function builder () {
       'objects': {
         'feedbase': {
           'class': 'Feedbase',
-          'address': '0xcb43e0a4cffd48607d9dfe062127f9c6e72ff9d6'
+          'address': '0x674c618ac80e497b60fc2b06be8359cffa50c546'
         }
       }
     };
