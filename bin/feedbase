@@ -9,7 +9,7 @@ case "claim":
   feedbase.filter({}, (error, id) => {
     if (error) throw error
     if (feedbase.owner(id) == feedbase.account) {
-      console.log(feedbase.inspect(id))
+      console.log(JSON.stringify(feedbase.inspect(id), null, 2))
       process.exit(0)
     }
   })
