@@ -1,14 +1,11 @@
 Feedbase
 ========
 
-This simple contract enables anyone to create "price feeds" which can
-be used to publish an arbitrary sequence of values over time.
-
-The feeds can be updated by their owners at any time, and expiration
-dates can be set to prevent consumers from reading stale data.
-
-Feeds can be transferred between owners, and the owner of a feed is
-able to charge a fee to on-chain consumers.
+This simple Ethereum contract enables anyone to create a "feed" which
+can be used to publish an arbitrary sequence of values.  Feeds can be
+transferred between owners and the owner of a feed is able to charge a
+fee to on-chain consumers of the information.  Expiration dates can be
+set to prevent consumers from reading stale data.
 
 
 Installation
