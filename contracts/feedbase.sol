@@ -20,7 +20,8 @@ contract Feedbase is FeedbaseEvents {
         bool     paid;
     }
 
-    Feed[] feeds;
+    Feed[2 ** 64] feeds;
+    uint64 next;
 
     function owner(uint64 id) constant returns (address) {
         return feeds[id].owner;
@@ -72,8 +73,8 @@ contract Feedbase is FeedbaseEvents {
     //------------------------------------------------------------------
 
     function claim(ERC20 token) returns (uint64 id) {
-        id = uint64(feeds.length++);
-        if (id != feeds.length - 1) throw;
+        id = next++;
+        if (next == 0) throw;
         feeds[id].owner = msg.sender;
         feeds[id].token = token;
         Claim(id);
