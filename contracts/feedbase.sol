@@ -15,8 +15,8 @@ contract Feedbase is FeedbaseEvents {
         ERC20    token;
 
         bytes32  value;
-        uint     timestamp;
-        uint     expiration;
+        uint64   timestamp;
+        uint64   expiration;
         bool     paid;
     }
 
@@ -43,11 +43,11 @@ contract Feedbase is FeedbaseEvents {
         return feeds[id].value;
     }
 
-    function timestamp(uint64 id) constant returns (uint) {
+    function timestamp(uint64 id) constant returns (uint64) {
         return feeds[id].timestamp;
     }
 
-    function expiration(uint64 id) constant returns (uint) {
+    function expiration(uint64 id) constant returns (uint64) {
         return feeds[id].expiration;
     }
 
@@ -103,11 +103,11 @@ contract Feedbase is FeedbaseEvents {
         Configure(id);
     }
 
-    function publish(uint64 id, bytes32 value, uint expiration)
+    function publish(uint64 id, bytes32 value, uint64 expiration)
         auth(id)
     {
         feeds[id].value = value;
-        feeds[id].timestamp = block.timestamp;
+        feeds[id].timestamp = uint64(block.timestamp);
         feeds[id].expiration = expiration;
         feeds[id].paid = false;
         Publish(id);

@@ -32,7 +32,7 @@ contract FeedbaseTest is Test, FeedbaseEvents {
     }
 
     function test_read_free_feed() {
-        feedbase.publish(id, 0x42, block.timestamp + 1);
+        feedbase.publish(id, 0x42, uint64(block.timestamp + 1));
         assertEq32(tester.read(id), 0x42);
     }
 
@@ -42,7 +42,7 @@ contract FeedbaseTest is Test, FeedbaseEvents {
     }
 
     function test_read_paid_feed() {
-        feedbase.publish(id, 0x42, block.timestamp + 1);
+        feedbase.publish(id, 0x42, uint64(block.timestamp + 1));
         feedbase.setFee(id, 100);
         dai.transfer(tester, 100);
 
@@ -59,7 +59,7 @@ contract FeedbaseTest is Test, FeedbaseEvents {
     }
 
     function testFail_read_paid_feed() {
-        feedbase.publish(id, 0x42, block.timestamp + 1);
+        feedbase.publish(id, 0x42, uint64(block.timestamp + 1));
         feedbase.setFee(id, 100);
         dai.transfer(tester, 99);
 
@@ -71,7 +71,7 @@ contract FeedbaseTest is Test, FeedbaseEvents {
     }
 
     function test_read_paid_feed_twice() {
-        feedbase.publish(id, 0x42, block.timestamp + 1);
+        feedbase.publish(id, 0x42, uint64(block.timestamp + 1));
         feedbase.setFee(id, 100);
         dai.transfer(tester, 100);
 
@@ -91,13 +91,13 @@ contract FeedbaseTest is Test, FeedbaseEvents {
     }
 
     function testFail_read_expired_feed() {
-        feedbase.publish(id, 0x42, block.timestamp - 1);
+        feedbase.publish(id, 0x42, uint64(block.timestamp - 1));
         feedbase.read(id);
     }
 
     function test_transfer() {
         feedbase.transfer(id, tester);
-        Feedbase(tester).publish(id, 0x123, block.timestamp + 1);
+        Feedbase(tester).publish(id, 0x123, uint64(block.timestamp + 1));
         assertEq32(feedbase.read(id), 0x123);
     }
 
@@ -107,7 +107,7 @@ contract FeedbaseTest is Test, FeedbaseEvents {
         Configure(id);
         feedbase.setDescription(id, "foo");
         Configure(id);
-        feedbase.publish(id, 0x42, block.timestamp + 1);
+        feedbase.publish(id, 0x42, uint64(block.timestamp + 1));
         Publish(id);
         feedbase.read(id);
         Pay(id);
