@@ -22,8 +22,8 @@ contract FeedbaseTest is Test, FeedbaseEvents {
     }
 
     function test_claim() {
-        assertEq(id, uint(1));
-        assertEq(feedbase.claim(dai), uint(2));
+        assertEq(id, uint(0));
+        assertEq(feedbase.claim(dai), uint(1));
     }
 
     function test_set_description() {

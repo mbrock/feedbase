@@ -20,18 +20,20 @@ contract Feedbase is FeedbaseEvents {
         bool     paid;
     }
 
-    mapping(uint64 => Feed) feeds;
-    uint64 next = 1;
+    Feed[] feeds;
 
     function owner(uint64 id) constant returns (address) {
         return feeds[id].owner;
     }
+
     function description(uint64 id) constant returns (bytes32) {
         return feeds[id].description;
     }
+
     function fee(uint64 id) constant returns (uint) {
         return feeds[id].fee;
     }
+
     function token(uint64 id) constant returns (ERC20) {
         return feeds[id].token;
     }
@@ -40,14 +42,29 @@ contract Feedbase is FeedbaseEvents {
         if (paymentNeeded(id)) throw;
         return feeds[id].value;
     }
+
     function timestamp(uint64 id) constant returns (uint) {
         return feeds[id].timestamp;
     }
+
     function expiration(uint64 id) constant returns (uint) {
         return feeds[id].expiration;
     }
+
     function paid(uint64 id) constant returns (bool) {
         return feeds[id].paid;
+    }
+
+    function expired(uint64 id) constant returns (bool) {
+        return block.timestamp > feeds[id].expiration;
+    }
+
+    function free(uint64 id) constant returns (bool) {
+        return address(feeds[id].token) == address(0);
+    }
+
+    function paymentNeeded(uint64 id) constant returns (bool) {
+        return !free(id) && !feeds[id].paid;
     }
 
     //------------------------------------------------------------------
@@ -55,8 +72,8 @@ contract Feedbase is FeedbaseEvents {
     //------------------------------------------------------------------
 
     function claim(ERC20 token) returns (uint64 id) {
-        id = next++;
-        if (next == 0) throw; // Ran out of IDs
+        id = uint64(feeds.length++);
+        if (id != feeds.length - 1) throw;
         feeds[id].owner = msg.sender;
         feeds[id].token = token;
         Claim(id);
@@ -122,17 +139,5 @@ contract Feedbase is FeedbaseEvents {
         }
 
         return feed.value;
-    }
-
-    function expired(uint64 id) constant returns (bool) {
-        return block.timestamp > feeds[id].expiration;
-    }
-
-    function free(uint64 id) constant returns (bool) {
-        return address(feeds[id].token) == address(0);
-    }
-
-    function paymentNeeded(uint64 id) constant returns (bool) {
-        return !free(id) && !feeds[id].paid;
     }
 }
