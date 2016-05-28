@@ -15,9 +15,12 @@ Feedbase can be installed using npm:
 
     $ npm install -g feedbase
 
-By default, Feedbase connects to the local Ethereum node on port 8545
-and uses the coinbase account as the default account.  To change this,
-you can set the environment variables `ETH_RPC_URL` and `ETH_ACCOUNT`.
+The following environment variables can be used for configuration:
+
+    ETH_ACCOUNT=0x1234567890123456789012345678901234567890
+    ETH_RPC_HOST=localhost
+    ETH_RPC_PORT=8545
+    ETH_RPC_URL=http://localhost:8545
 
 
 Claiming a feed
