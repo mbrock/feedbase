@@ -99,6 +99,8 @@ In this example we're setting the value of the feed to the number 73
 represented in 128x128 fixed-point notation.  The expiration date is
 set to 5 minutes from now.
 
+See also Keeper <https://github.com/nexusdev/keeper>.
+
 
 More information
 ----------------
