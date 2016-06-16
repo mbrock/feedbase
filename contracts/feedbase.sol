@@ -39,7 +39,8 @@ contract Feedbase is FeedbaseEvents {
         return feeds[id].token;
     }
 
-    function value(uint64 id) constant returns (bytes32) {
+    // Internal - you cannot read expired values at all.
+    function value(uint64 id) constant internal returns (bytes32) {
         if (paymentNeeded(id)) throw;
         return feeds[id].value;
     }
@@ -125,20 +126,25 @@ contract Feedbase is FeedbaseEvents {
     // For consumers
     //------------------------------------------------------------------
 
-    function read(uint64 id) returns (bytes32) {
-        if (expired(id)) throw;
-        return readExpired(id);
+    function read(uint64 id) returns (bytes32 value) {
+        var (val, ok) = tryRead(id);
+        if (!ok) { throw; }
+        return val;
     }
-
-    function readExpired(uint64 id) returns (bytes32) {
+    function tryRead(uint64 id) returns (bytes32 value, bool ok) {
         var feed = feeds[id];
-
-        if (paymentNeeded(id)) {
-            feed.token.transferFrom(msg.sender, feed.owner, feed.fee);
+        if (expired(id)) {
+            return (0x0, false);
+        }
+        var paid = feeds[id].paid || feeds[id].token == ERC20(0);
+        if (!paid) {
+            var success = feed.token.transferFrom(msg.sender, feed.owner, feed.fee);
+            if (!success) {
+                return (0x0, false);
+            }
             feed.paid = true;
             Pay(id);
         }
-
-        return feed.value;
+        return (feeds[id].value, true);
     }
 }

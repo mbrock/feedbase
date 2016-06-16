@@ -7,6 +7,9 @@ contract FeedbaseTester is Tester {
     function read(uint64 id) returns (bytes32 value) {
         return Feedbase(_t).read(id);
     }
+    function tryRead(uint64 id) returns (bytes32 value, bool ok) {
+        return Feedbase(_t).tryRead(id);
+    }
 }
 
 contract FeedbaseTest is Test, FeedbaseEvents {
@@ -69,6 +72,21 @@ contract FeedbaseTest is Test, FeedbaseEvents {
         tester._target(feedbase);
         tester.read(id);
     }
+/*  TODO: This test with non-throwing base token.
+    function test_tryRead_paid_feed() {
+        feedbase.publish(id, 0x42, uint64(block.timestamp + 1));
+        feedbase.setFee(id, 100);
+        dai.transfer(tester, 99);
+
+        tester._target(dai);
+        DSToken(tester).approve(feedbase, 100);
+
+        tester._target(feedbase);
+        var (val, ok) = tester.tryRead(id);
+        assertFalse(ok);
+    }
+*/
+
 
     function test_read_paid_feed_twice() {
         feedbase.publish(id, 0x42, uint64(block.timestamp + 1));
@@ -94,6 +112,12 @@ contract FeedbaseTest is Test, FeedbaseEvents {
         feedbase.publish(id, 0x42, uint64(block.timestamp - 1));
         feedbase.read(id);
     }
+    function test_tryRead_expired_feed() {
+        feedbase.publish(id, 0x42, uint64(block.timestamp - 1));
+        var (_, ok) = feedbase.tryRead(id);
+        assertFalse(ok);
+    }
+
 
     function test_transfer() {
         feedbase.transfer(id, tester);
