@@ -63,8 +63,9 @@ can be reset at any time (including to zero):
     $ feedbase set-fee 16 0x10000000
 
 Fees are always charged to the first contract to read each value,
-but the fee is not charged to subsequent reads of the same value.
-When a new value is published, the fee is charged again.
+but the fee is not charged to subsequent reads of the same value
+(ie, there is a single `paid` flag per feed).
+When a new value is published, the fee is charged again (`paid` is reset to false).
 
 If you want, you can add a description (32 bytes maximum):
 
