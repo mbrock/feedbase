@@ -1,10 +1,10 @@
 import "dappsys/token/erc20.sol";
 
 contract FeedbaseEvents {
-    event Claim     (uint64 indexed id);
-    event Configure (uint64 indexed id);
-    event Publish   (uint64 indexed id);
-    event Pay       (uint64 indexed id);
+    event Claimed    (uint64 indexed id);
+    event Configured (uint64 indexed id);
+    event Published  (uint64 indexed id);
+    event Paid       (uint64 indexed id);
 }
 
 contract Feedbase is FeedbaseEvents {
@@ -37,12 +37,6 @@ contract Feedbase is FeedbaseEvents {
 
     function token(uint64 id) constant returns (ERC20) {
         return feeds[id].token;
-    }
-
-    // Internal - you cannot read expired values at all.
-    function value(uint64 id) constant internal returns (bytes32) {
-        if (paymentNeeded(id)) throw;
-        return feeds[id].value;
     }
 
     function timestamp(uint64 id) constant returns (uint64) {
@@ -78,7 +72,7 @@ contract Feedbase is FeedbaseEvents {
         if (next == 0) throw;
         feeds[id].owner = msg.sender;
         feeds[id].token = token;
-        Claim(id);
+        Claimed(id);
     }
 
     function claim() returns (uint64) {
@@ -94,7 +88,7 @@ contract Feedbase is FeedbaseEvents {
         auth(id)
     {
         feeds[id].description = description;
-        Configure(id);
+        Configured(id);
     }
 
     function setFee(uint64 id, uint fee)
@@ -102,7 +96,7 @@ contract Feedbase is FeedbaseEvents {
     {
         if (free(id)) throw;
         feeds[id].fee = fee;
-        Configure(id);
+        Configured(id);
     }
 
     function publish(uint64 id, bytes32 value, uint64 expiration)
@@ -112,39 +106,45 @@ contract Feedbase is FeedbaseEvents {
         feeds[id].timestamp = uint64(block.timestamp);
         feeds[id].expiration = expiration;
         feeds[id].paid = false;
-        Publish(id);
+        Published(id);
     }
 
     function transfer(uint64 id, address owner)
         auth(id)
     {
         feeds[id].owner = owner;
-        Configure(id);
+        Configured(id);
     }
 
     //------------------------------------------------------------------
     // For consumers
     //------------------------------------------------------------------
 
-    function read(uint64 id) returns (bytes32 value) {
-        var (val, ok) = tryRead(id);
-        if (!ok) { throw; }
-        return val;
+    function read(uint64 id) returns (bytes32) {
+        var (value, ok) = tryRead(id);
+        if (!ok) throw;
+        return value;
     }
+
     function tryRead(uint64 id) returns (bytes32 value, bool ok) {
-        var feed = feeds[id];
-        if (expired(id)) {
+        if (expired(id) || !pay(id, msg.sender)) {
             return (0x0, false);
+        } else {
+            return (feeds[id].value, true);
         }
-        var paid = feeds[id].paid || feeds[id].token == ERC20(0);
-        if (!paid) {
-            var success = feed.token.transferFrom(msg.sender, feed.owner, feed.fee);
-            if (!success) {
-                return (0x0, false);
-            }
+    }
+
+    function pay(uint64 id, address payer) internal returns (bool ok) {
+        var feed = feeds[id];
+
+        if (!paymentNeeded(id)) {
+            ok = true;
+        } else if (feed.token.transferFrom(payer, feed.owner, feed.fee)) {
+            Paid(id);
             feed.paid = true;
-            Pay(id);
+            ok = true;
+        } else {
+            ok = false;
         }
-        return (feeds[id].value, true);
     }
 }

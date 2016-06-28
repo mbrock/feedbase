@@ -3,7 +3,7 @@ import "dappsys/token/base.sol";
 import "feedbase.sol";
 
 contract FeedbaseTester is Tester {
-    // Type declaration needed to retrieve return value
+    // Type declarations needed to retrieve return values
     function read(uint64 id) returns (bytes32 value) {
         return Feedbase(_t).read(id);
     }
@@ -72,6 +72,7 @@ contract FeedbaseTest is Test, FeedbaseEvents {
         tester._target(feedbase);
         tester.read(id);
     }
+
 /*  TODO: This test with non-throwing base token.
     function test_tryRead_paid_feed() {
         feedbase.publish(id, 0x42, uint64(block.timestamp + 1));
@@ -86,7 +87,6 @@ contract FeedbaseTest is Test, FeedbaseEvents {
         assertFalse(ok);
     }
 */
-
 
     function test_read_paid_feed_twice() {
         feedbase.publish(id, 0x42, uint64(block.timestamp + 1));
@@ -112,12 +112,12 @@ contract FeedbaseTest is Test, FeedbaseEvents {
         feedbase.publish(id, 0x42, uint64(block.timestamp - 1));
         feedbase.read(id);
     }
+
     function test_tryRead_expired_feed() {
         feedbase.publish(id, 0x42, uint64(block.timestamp - 1));
         var (_, ok) = feedbase.tryRead(id);
         assertFalse(ok);
     }
-
 
     function test_transfer() {
         feedbase.transfer(id, tester);
@@ -128,17 +128,17 @@ contract FeedbaseTest is Test, FeedbaseEvents {
     function test_events() {
         expectEventsExact(feedbase);
         feedbase.setFee(id, 0);
-        Configure(id);
+        Configured(id);
         feedbase.setDescription(id, "foo");
-        Configure(id);
+        Configured(id);
         feedbase.publish(id, 0x42, uint64(block.timestamp + 1));
-        Publish(id);
+        Published(id);
         feedbase.read(id);
-        Pay(id);
+        Paid(id);
         feedbase.read(id);
         feedbase.transfer(id, tester);
-        Configure(id);
+        Configured(id);
         var id2 = feedbase.claim(dai);
-        Claim(id2);
+        Claimed(id2);
     }
 }
