@@ -1,19 +1,25 @@
 #!/usr/bin/env node
 var command = process.argv[2]
 var args = process.argv.slice(3)
+
+if (command == "version" || command == "--version") {
+  console.log(require("../package.json").version)
+  process.exit(0)
+}
+
 var feedbase = require("..")()
 
 switch (command) {
 case "claim":
   feedbase.claim(args[0])
-  feedbase.filter({}, (error, id) => {
+  feedbase.filter({}, function(error, id) {
     if (error) throw error
     if (feedbase.owner(id) == feedbase.account) {
       console.log(JSON.stringify(feedbase.inspect(id), null, 2))
       process.exit(0)
     }
   })
-  setTimeout(() => {
+  setTimeout(function() {
     console.error("error: timeout")
     process.exit(1)
   }, 300 * 1000)
@@ -31,7 +37,7 @@ case "set-fee":
   feedbase.setFee(args[0], args[1])
   break
 case "watch":
-  feedbase.filter({}, (error, id) => {
+  feedbase.filter({}, function(error, id) {
     console.log(JSON.stringify(feedbase.inspect(id), null, 2))
   })
   break
