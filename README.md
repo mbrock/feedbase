@@ -15,6 +15,10 @@ Feedbase can be installed using npm:
 
     npm install -g feedbase
 
+You also need to run an Ethereum node on your machine:
+
+    geth --testnet --rpc --unlock 0x1234567890123456789012345678901234567890
+
 The following environment variables can be used for configuration:
 
     ETH_ACCOUNT=0x1234567890123456789012345678901234567890
