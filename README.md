@@ -22,8 +22,6 @@ You also need to run an Ethereum node on your machine:
 The following environment variables can be used for configuration:
 
     ETH_ACCOUNT=0x1234567890123456789012345678901234567890
-    ETH_RPC_HOST=localhost
-    ETH_RPC_PORT=8545
     ETH_RPC_URL=http://localhost:8545
 
 
