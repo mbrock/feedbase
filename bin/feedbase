@@ -7,7 +7,18 @@ if (command == "version" || command == "--version") {
   process.exit(0)
 }
 
-var feedbase = require("..")()
+var feedbase
+
+try {
+  feedbase = require("..")()
+} catch (error) {
+  if (error.eth_rpc_connection) {
+    console.error("Error: " + error.message)
+    process.exit(1)
+  } else {
+    throw error
+  }
+}
 
 switch (command) {
 case "claim":
