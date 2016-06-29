@@ -13,7 +13,7 @@ Installation
 
 Feedbase can be installed using npm:
 
-    $ npm install -g feedbase
+    npm install -g feedbase
 
 The following environment variables can be used for configuration:
 
