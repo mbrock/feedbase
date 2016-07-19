@@ -139,12 +139,15 @@ contract Feedbase is FeedbaseEvents {
 
         if (!paymentNeeded(id)) {
             ok = true;
-        } else if (feed.token.transferFrom(payer, feed.owner, feed.fee)) {
-            Paid(id);
-            feed.paid = true;
-            ok = true;
         } else {
-            ok = false;
+            feed.paid = true;
+            if (feed.token.transferFrom(payer, feed.owner, feed.fee)) {
+                Paid(id);
+                ok = true;
+            } else {
+                ok = false;
+                feed.paid = false;
+            }
         }
     }
 }
