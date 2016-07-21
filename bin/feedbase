@@ -42,10 +42,10 @@ case "publish":
   feedbase.publish(args[0], args[1], args[2])
   break
 case "set-description":
-  feedbase.setDescription(args[0], args[1])
+  feedbase.set_description(args[0], args[1])
   break
 case "set-fee":
-  feedbase.setFee(args[0], args[1])
+  feedbase.set_fee(args[0], args[1])
   break
 case "watch":
   feedbase.filter({}, function(error, id) {

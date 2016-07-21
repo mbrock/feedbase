@@ -79,14 +79,14 @@ contract Feedbase is FeedbaseEvents {
         _
     }
 
-    function setDescription(uint64 id, bytes32 description)
+    function set_description(uint64 id, bytes32 description)
         auth(id)
     {
         feeds[id].description = description;
         Configured(id);
     }
 
-    function setFee(uint64 id, uint fee)
+    function set_fee(uint64 id, uint fee)
         auth(id)
     {
         if (free(id)) throw;

@@ -28,7 +28,7 @@ contract FeedbaseTest is Test, FeedbaseEvents {
     }
 
     function test_set_description() {
-        feedbase.setDescription(id, "foo");
+        feedbase.set_description(id, "foo");
         assertEq32("foo", feedbase.description(id));
     }
 
@@ -41,12 +41,12 @@ contract FeedbaseTest is Test, FeedbaseEvents {
 
     function testFail_set_fee_without_token() {
         var id2 = feedbase.claim();
-        feedbase.setFee(id2, 100);
+        feedbase.set_fee(id2, 100);
     }
 
     function test_read_paid_feed() {
         feedbase.publish(id, 0x42, uint64(block.timestamp + 1));
-        feedbase.setFee(id, 100);
+        feedbase.set_fee(id, 100);
         dai.transfer(tester, 100);
 
         tester._target(dai);
@@ -64,7 +64,7 @@ contract FeedbaseTest is Test, FeedbaseEvents {
 
     function test_read_paid_feed_without_payment() {
         feedbase.publish(id, 0, uint64(block.timestamp + 1));
-        feedbase.setFee(id, 100);
+        feedbase.set_fee(id, 100);
         dai.transfer(tester, 99);
 
         tester._target(dai);
@@ -78,7 +78,7 @@ contract FeedbaseTest is Test, FeedbaseEvents {
 
     function test_read_paid_feed_twice() {
         feedbase.publish(id, 0x42, uint64(block.timestamp + 1));
-        feedbase.setFee(id, 100);
+        feedbase.set_fee(id, 100);
         dai.transfer(tester, 100);
 
         tester._target(dai);
@@ -116,9 +116,9 @@ contract FeedbaseTest is Test, FeedbaseEvents {
 
     function test_events() {
         expectEventsExact(feedbase);
-        feedbase.setFee(id, 0);
+        feedbase.set_fee(id, 0);
         Configured(id);
-        feedbase.setDescription(id, "foo");
+        feedbase.set_description(id, "foo");
         Configured(id);
         feedbase.publish(id, 0x42, uint64(block.timestamp + 1));
         Published(id);
