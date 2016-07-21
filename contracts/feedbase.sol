@@ -1,15 +1,15 @@
 import "dappsys/token/erc20.sol";
 
 contract FeedbaseEvents {
-    event Claimed    (uint64 indexed id);
-    event Configured (uint64 indexed id);
-    event Published  (uint64 indexed id);
-    event Paid       (uint64 indexed id);
+    event Claimed    (uint72 indexed id);
+    event Configured (uint72 indexed id);
+    event Published  (uint72 indexed id);
+    event Paid       (uint72 indexed id);
 }
 
 contract Feedbase is FeedbaseEvents {
-    Feed[2**64]  feeds;
-    uint64       next;
+    Feed[2**72]  feeds;
+    uint72       next;
 
     struct Feed {
         address  owner;
@@ -18,43 +18,43 @@ contract Feedbase is FeedbaseEvents {
         ERC20    token;
 
         bytes32  value;
-        uint64   timestamp;
-        uint64   expiration;
+        uint40   timestamp;
+        uint40   expiration;
         bool     paid;
     }
 
-    function owner(uint64 id)
+    function owner(uint72 id)
     constant returns (address) { return feeds[id].owner; }
 
-    function description(uint64 id)
+    function description(uint72 id)
     constant returns (bytes32) { return feeds[id].description; }
 
-    function fee(uint64 id)
+    function fee(uint72 id)
     constant returns (uint)    { return feeds[id].fee; }
 
-    function token(uint64 id)
+    function token(uint72 id)
     constant returns (ERC20)   { return feeds[id].token; }
 
-    function timestamp(uint64 id)
-    constant returns (uint64)  { return feeds[id].timestamp; }
+    function timestamp(uint72 id)
+    constant returns (uint40)  { return feeds[id].timestamp; }
 
-    function expiration(uint64 id)
-    constant returns (uint64)  { return feeds[id].expiration; }
+    function expiration(uint72 id)
+    constant returns (uint40)  { return feeds[id].expiration; }
 
-    function paid(uint64 id)
+    function paid(uint72 id)
     constant returns (bool)    { return feeds[id].paid; }
 
     //------------------------------------------------------------------
 
-    function expired(uint64 id) constant returns (bool) {
+    function expired(uint72 id) constant returns (bool) {
         return block.timestamp > feeds[id].expiration;
     }
 
-    function free(uint64 id) constant returns (bool) {
+    function free(uint72 id) constant returns (bool) {
         return address(feeds[id].token) == address(0);
     }
 
-    function unpaid(uint64 id) constant returns (bool) {
+    function unpaid(uint72 id) constant returns (bool) {
         return !free(id) && !feeds[id].paid;
     }
 
@@ -62,7 +62,7 @@ contract Feedbase is FeedbaseEvents {
     // For feed owners
     //------------------------------------------------------------------
 
-    function claim(ERC20 token) returns (uint64 id) {
+    function claim(ERC20 token) returns (uint72 id) {
         id = next++;
         if (next == 0) throw;
         feeds[id].owner = msg.sender;
@@ -70,23 +70,23 @@ contract Feedbase is FeedbaseEvents {
         Claimed(id);
     }
 
-    function claim() returns (uint64 id) {
+    function claim() returns (uint72 id) {
         return claim(ERC20(0));
     }
 
-    modifier auth(uint64 id) {
+    modifier auth(uint72 id) {
         if (msg.sender != feeds[id].owner) throw;
         _
     }
 
-    function set_description(uint64 id, bytes32 description)
+    function set_description(uint72 id, bytes32 description)
         auth(id)
     {
         feeds[id].description = description;
         Configured(id);
     }
 
-    function set_fee(uint64 id, uint fee)
+    function set_fee(uint72 id, uint fee)
         auth(id)
     {
         if (free(id)) throw;
@@ -94,17 +94,17 @@ contract Feedbase is FeedbaseEvents {
         Configured(id);
     }
 
-    function publish(uint64 id, bytes32 value, uint64 expiration)
+    function publish(uint72 id, bytes32 value, uint40 expiration)
         auth(id)
     {
         feeds[id].value       = value;
-        feeds[id].timestamp   = uint64(block.timestamp);
+        feeds[id].timestamp   = uint40(block.timestamp);
         feeds[id].expiration  = expiration;
         feeds[id].paid        = false;
         Published(id);
     }
 
-    function transfer(uint64 id, address owner)
+    function transfer(uint72 id, address owner)
         auth(id)
     {
         feeds[id].owner = owner;
@@ -115,7 +115,7 @@ contract Feedbase is FeedbaseEvents {
     // For consumers
     //------------------------------------------------------------------
 
-    function read(uint64 id) returns (bool ok, bytes32 value) {
+    function read(uint72 id) returns (bool ok, bytes32 value) {
         if (!expired(id) && pay(id, msg.sender)) {
             return (true, feeds[id].value);
         } else {
@@ -123,7 +123,7 @@ contract Feedbase is FeedbaseEvents {
         }
     }
 
-    function pay(uint64 id, address payer) internal returns (bool ok) {
+    function pay(uint72 id, address payer) internal returns (bool ok) {
         if (!unpaid(id)) return true;
 
         var feed = feeds[id];
