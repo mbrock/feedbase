@@ -115,15 +115,9 @@ contract Feedbase is FeedbaseEvents {
     // For consumers
     //------------------------------------------------------------------
 
-    function read(uint64 id) returns (bytes32) {
-        var (value, ok) = tryRead(id);
-        if (!ok) throw;
-        return value;
-    }
-
-    function tryRead(uint64 id) returns (bytes32 value, bool ok) {
+    function read(uint64 id) returns (bytes32 value, bool ok) {
         if (expired(id) || !pay(id, msg.sender)) {
-            return (0x0, false);
+            return (0, false);
         } else {
             return (feeds[id].value, true);
         }
@@ -133,14 +127,17 @@ contract Feedbase is FeedbaseEvents {
         if (!unpaid(id)) return true;
 
         var feed = feeds[id];
+
         feed.paid = true;
 
-        if (feed.token.transferFrom(payer, feed.owner, feed.fee)) {
+        ok = feed.token.call(bytes4(sha3(
+            "transferFrom(address,address,uint256)"
+        )), payer, feed.owner, feed.fee);
+
+        if (ok) {
             Paid(id);
-            return true;
         } else {
             feed.paid = false;
-            return false;
         }
     }
 }

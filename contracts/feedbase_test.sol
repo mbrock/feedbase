@@ -1,21 +1,19 @@
 import "dapple/test.sol";
 import "dappsys/token/base.sol";
+
 import "feedbase.sol";
 
 contract FeedbaseTester is Tester {
-    // Type declarations needed to retrieve return values
-    function read(uint64 id) returns (bytes32 value) {
+    // Type declaration needed to retrieve return values
+    function read(uint64 id) returns (bytes32 value, bool ok) {
         return Feedbase(_t).read(id);
-    }
-    function tryRead(uint64 id) returns (bytes32 value, bool ok) {
-        return Feedbase(_t).tryRead(id);
     }
 }
 
 contract FeedbaseTest is Test, FeedbaseEvents {
-    Feedbase feedbase = new Feedbase();
-    DSToken dai = new DSTokenBase(1000);
-    FeedbaseTester tester = new FeedbaseTester();
+    DSToken        dai      = new DSTokenBase(1000);
+    Feedbase       feedbase = new Feedbase();
+    FeedbaseTester tester   = new FeedbaseTester();
 
     uint64 id;
 
@@ -36,7 +34,9 @@ contract FeedbaseTest is Test, FeedbaseEvents {
 
     function test_read_free_feed() {
         feedbase.publish(id, 0x42, uint64(block.timestamp + 1));
-        assertEq32(tester.read(id), 0x42);
+        var (value, ok) = tester.read(id);
+        assertTrue(ok);
+        assertEq32(value, 0x42);
     }
 
     function testFail_set_fee_without_token() {
@@ -55,14 +55,15 @@ contract FeedbaseTest is Test, FeedbaseEvents {
         tester._target(feedbase);
         assertEq(dai.balanceOf(tester), 100);
         var initial = dai.balanceOf(this);
-        var value = tester.read(id);
+        var (value, ok) = tester.read(id);
+        assertTrue(ok);
+        assertEq32(value, 0x42);
         assertEq(dai.balanceOf(this) - initial, 100);
         assertEq(dai.balanceOf(tester), 0);
-        assertEq32(value, 0x42);
     }
 
-    function testFail_read_paid_feed() {
-        feedbase.publish(id, 0x42, uint64(block.timestamp + 1));
+    function test_read_paid_feed_without_payment() {
+        feedbase.publish(id, 0, uint64(block.timestamp + 1));
         feedbase.setFee(id, 100);
         dai.transfer(tester, 99);
 
@@ -70,23 +71,10 @@ contract FeedbaseTest is Test, FeedbaseEvents {
         DSToken(tester).approve(feedbase, 100);
 
         tester._target(feedbase);
-        tester.read(id);
-    }
-
-/*  TODO: This test with non-throwing base token.
-    function test_tryRead_paid_feed() {
-        feedbase.publish(id, 0x42, uint64(block.timestamp + 1));
-        feedbase.setFee(id, 100);
-        dai.transfer(tester, 99);
-
-        tester._target(dai);
-        DSToken(tester).approve(feedbase, 100);
-
-        tester._target(feedbase);
-        var (val, ok) = tester.tryRead(id);
+        var (value, ok) = tester.read(id);
         assertFalse(ok);
+        assertEq32(value, 0);
     }
-*/
 
     function test_read_paid_feed_twice() {
         feedbase.publish(id, 0x42, uint64(block.timestamp + 1));
@@ -97,32 +85,33 @@ contract FeedbaseTest is Test, FeedbaseEvents {
         ERC20(tester).approve(feedbase, 100);
 
         tester._target(feedbase);
-        var pre = dai.balanceOf(this);
-        var value1 = tester.read(id);
-        var post1 = dai.balanceOf(this);
-        var value2 = tester.read(id);
-        var post2 = dai.balanceOf(this);
+
+        var pre           = dai.balanceOf(this);
+        var (value1, ok1) = tester.read(id);
+        var post1         = dai.balanceOf(this);
+        var (value2, ok2) = tester.read(id);
+        var post2         = dai.balanceOf(this);
+
+        assertTrue(ok1 && ok2);
         assertEq(post1 - pre, 100);
         assertEq(post2 - post1, 0);
         assertEq32(value1, 0x42);
         assertEq32(value2, 0x42);
     }
 
-    function testFail_read_expired_feed() {
+    function test_read_expired_feed() {
         feedbase.publish(id, 0x42, uint64(block.timestamp - 1));
-        feedbase.read(id);
-    }
-
-    function test_tryRead_expired_feed() {
-        feedbase.publish(id, 0x42, uint64(block.timestamp - 1));
-        var (_, ok) = feedbase.tryRead(id);
+        var (value, ok) = feedbase.read(id);
         assertFalse(ok);
+        assertEq32(value, 0);
     }
 
     function test_transfer() {
         feedbase.transfer(id, tester);
-        Feedbase(tester).publish(id, 0x123, uint64(block.timestamp + 1));
-        assertEq32(feedbase.read(id), 0x123);
+        Feedbase(tester).publish(id, 123, uint64(block.timestamp + 1));
+        var (value, ok) = feedbase.read(id);
+        assertTrue(ok);
+        assertEq32(value, 123);
     }
 
     function test_events() {
