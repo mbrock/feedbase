@@ -1,6 +1,6 @@
 #!/usr/bin/env node
 var command = process.argv[2]
-var args = process.argv.slice(3)
+var args    = process.argv.slice(3)
 
 if (command == "version" || command == "--version") {
   console.log(require("../package.json").version)
@@ -35,23 +35,29 @@ case "claim":
     process.exit(1)
   }, 300 * 1000)
   break
-case "inspect":
-  console.log(JSON.stringify(feedbase.inspect(args[0]), null, 2))
+
+case "transfer":
+  feedbase.transfer(args[0], args[1])
+  break
+case "redescribe":
+  feedbase.redescribe(args[0], args[1])
+  break
+case "reprice":
+  feedbase.reprice(args[0], args[1])
   break
 case "publish":
   feedbase.publish(args[0], args[1], args[2])
   break
-case "set-description":
-  feedbase.set_description(args[0], args[1])
-  break
-case "set-fee":
-  feedbase.set_fee(args[0], args[1])
+
+case "inspect":
+  console.log(JSON.stringify(feedbase.inspect(args[0]), null, 2))
   break
 case "watch":
   feedbase.filter({}, function(error, id) {
     console.log(JSON.stringify(feedbase.inspect(id), null, 2))
   })
   break
+
 default:
   console.error("error: unknown command: " + command)
   process.exit(1)
