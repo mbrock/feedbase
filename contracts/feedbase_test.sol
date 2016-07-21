@@ -1,3 +1,26 @@
+/// feedbase_test.sol --- functional tests for the `Feedbase' contract
+
+// Copyright (C) 2015-2016  Nexus Development <https://nexusdev.us>
+// Copyright (C) 2015-2016  Nikolai Mushegian <nikolai@nexusdev.us>
+// Copyright (C) 2016       Daniel Brockman   <daniel@brockman.se>
+
+// This file is part of Feedbase.
+
+// Feedbase is free software; you can redistribute and/or modify it
+// under the terms of the GNU General Public License as published by
+// the Free Software Foundation; either version 3 of the License, or
+// (at your option) any later version.
+//
+// Feedbase is distributed in the hope that it will be useful,
+// but WITHOUT ANY WARRANTY; without even the implied warranty
+// of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+// See the GNU General Public License for more details.
+//
+// You should have received a copy of the GNU General Public License
+// along with Feedbase.  If not, see <http://www.gnu.org/licenses/>.
+
+/// Code:
+
 import "dapple/test.sol";
 import "erc20/erc20.sol";
 import "feedbase.sol";
@@ -20,7 +43,7 @@ contract FeedbaseTest is Test,
     function recently() returns (uint40) { return uint40(now - 1); }
 
     //------------------------------------------------------------------
-    // Feed configuration and setup
+    // Publishing and reading values
     //------------------------------------------------------------------
 
     function test_claim() {
@@ -30,61 +53,9 @@ contract FeedbaseTest is Test,
         Claimed(feedbase.claim(token), address(this), token);
     }
 
-    //------------------------------------------------------------------
-
-    function test_reprice() {
-        expectEventsExact(feedbase);
-
-        feedbase.reprice (id, 50);
-        Repriced         (id, 50);
-
-        assertEq(feedbase.price(id), 50);
-    }
-
-    function testFail_reprice_illicit() {
-        Feedbase(assistant).reprice(id, 50);
-    }
-
-    function testFail_reprice_charity() {
-        feedbase.reprice(feedbase.claim(), 50);
-    }
-
-    //------------------------------------------------------------------
-
-    function test_redescribe() {
-        expectEventsExact(feedbase);
-
-        feedbase.redescribe (id, "foo");
-        Redescribed         (id, "foo");
-
-        assertEq32(feedbase.description(id), "foo");
-    }
-
-    function testFail_redescribe_illicit() {
-        Feedbase(assistant).redescribe(id, "foo");
-    }
-
-    //------------------------------------------------------------------
-
-    function test_transfer() {
-        expectEventsExact(feedbase);
-
-        feedbase.transfer (id, assistant);
-        Transferred       (id, assistant);
-
-        Feedbase(assistant).reprice (id, 50);
-        Repriced                    (id, 50);
-
-        assertEq(feedbase.price(id), 50);
-    }
-
-    //------------------------------------------------------------------
-    // Publishing and reading values
-    //------------------------------------------------------------------
-
     function test_read_free() {
         expectEventsExact(feedbase);
-        
+
         id = feedbase.claim();
         Claimed          (id, address(this), ERC20(0));
 
@@ -185,6 +156,57 @@ contract FeedbaseTest is Test,
         assertFalse(ok);
         assertEq32(value, 0x0);
     }
+
+    //------------------------------------------------------------------
+    // Feed setup and configuration
+    //------------------------------------------------------------------
+
+    function test_reprice() {
+        expectEventsExact(feedbase);
+
+        feedbase.reprice (id, 50);
+        Repriced         (id, 50);
+
+        assertEq(feedbase.price(id), 50);
+    }
+
+    function testFail_reprice_illicit() {
+        Feedbase(assistant).reprice(id, 50);
+    }
+
+    function testFail_reprice_charity() {
+        feedbase.reprice(feedbase.claim(), 50);
+    }
+
+    //------------------------------------------------------------------
+
+    function test_redescribe() {
+        expectEventsExact(feedbase);
+
+        feedbase.redescribe (id, "foo");
+        Redescribed         (id, "foo");
+
+        assertEq32(feedbase.description(id), "foo");
+    }
+
+    function testFail_redescribe_illicit() {
+        Feedbase(assistant).redescribe(id, "foo");
+    }
+
+    //------------------------------------------------------------------
+
+    function test_transfer() {
+        expectEventsExact(feedbase);
+
+        feedbase.transfer (id, assistant);
+        Transferred       (id, assistant);
+
+        Feedbase(assistant).reprice (id, 50);
+        Repriced                    (id, 50);
+
+        assertEq(feedbase.price(id), 50);
+    }
+
 }
 
 //----------------------------------------------------------------------

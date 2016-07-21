@@ -1,11 +1,5 @@
 name: feedbase
-version: 0.4.0
+version: 0.5.0-dev
 layout:
   sol_sources: contracts
   build_dir: build
-environments:
-  morden:
-    objects:
-      feedbase:
-        class: Feedbase
-        address: '0x813fcfcf74688c62eb36211ccdc5ba1f068759c3'
