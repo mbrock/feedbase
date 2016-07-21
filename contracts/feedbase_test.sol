@@ -5,7 +5,7 @@ import "feedbase.sol";
 
 contract FeedbaseTester is Tester {
     // Type declaration needed to retrieve return values
-    function read(uint64 id) returns (bytes32 value, bool ok) {
+    function read(uint64 id) returns (bool ok, bytes32 value) {
         return Feedbase(_t).read(id);
     }
 }
@@ -34,7 +34,7 @@ contract FeedbaseTest is Test, FeedbaseEvents {
 
     function test_read_free_feed() {
         feedbase.publish(id, 0x42, uint64(block.timestamp + 1));
-        var (value, ok) = tester.read(id);
+        var (ok, value) = tester.read(id);
         assertTrue(ok);
         assertEq32(value, 0x42);
     }
@@ -55,7 +55,7 @@ contract FeedbaseTest is Test, FeedbaseEvents {
         tester._target(feedbase);
         assertEq(dai.balanceOf(tester), 100);
         var initial = dai.balanceOf(this);
-        var (value, ok) = tester.read(id);
+        var (ok, value) = tester.read(id);
         assertTrue(ok);
         assertEq32(value, 0x42);
         assertEq(dai.balanceOf(this) - initial, 100);
@@ -71,7 +71,7 @@ contract FeedbaseTest is Test, FeedbaseEvents {
         DSToken(tester).approve(feedbase, 100);
 
         tester._target(feedbase);
-        var (value, ok) = tester.read(id);
+        var (ok, value) = tester.read(id);
         assertFalse(ok);
         assertEq32(value, 0);
     }
@@ -87,9 +87,9 @@ contract FeedbaseTest is Test, FeedbaseEvents {
         tester._target(feedbase);
 
         var pre           = dai.balanceOf(this);
-        var (value1, ok1) = tester.read(id);
+        var (ok1, value1) = tester.read(id);
         var post1         = dai.balanceOf(this);
-        var (value2, ok2) = tester.read(id);
+        var (ok2, value2) = tester.read(id);
         var post2         = dai.balanceOf(this);
 
         assertTrue(ok1 && ok2);
@@ -101,7 +101,7 @@ contract FeedbaseTest is Test, FeedbaseEvents {
 
     function test_read_expired_feed() {
         feedbase.publish(id, 0x42, uint64(block.timestamp - 1));
-        var (value, ok) = feedbase.read(id);
+        var (ok, value) = feedbase.read(id);
         assertFalse(ok);
         assertEq32(value, 0);
     }
@@ -109,7 +109,7 @@ contract FeedbaseTest is Test, FeedbaseEvents {
     function test_transfer() {
         feedbase.transfer(id, tester);
         Feedbase(tester).publish(id, 123, uint64(block.timestamp + 1));
-        var (value, ok) = feedbase.read(id);
+        var (ok, value) = feedbase.read(id);
         assertTrue(ok);
         assertEq32(value, 123);
     }
