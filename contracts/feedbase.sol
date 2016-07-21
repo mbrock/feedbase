@@ -116,10 +116,10 @@ contract Feedbase is FeedbaseEvents {
     //------------------------------------------------------------------
 
     function read(uint64 id) returns (bool ok, bytes32 value) {
-        if (expired(id) || !pay(id, msg.sender)) {
-            return (false, 0);
-        } else {
+        if (!expired(id) && pay(id, msg.sender)) {
             return (true, feeds[id].value);
+        } else {
+            return (false, 0);
         }
     }
 
