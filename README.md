@@ -22,7 +22,7 @@ smart contracts that rely on "oracles" in a nice, standardized way.
 Another interesting use case is for configuration of smart contracts.
 
 Think of Feedbase as a piece of low-level Ethereum infrastructure.
-Feedbase is not controlled by anyone and is free for anyone to use.
+It's not owned or controlled by anyone and is free for anyone to use.
 
 
 Getting started
@@ -109,7 +109,7 @@ For more details, take a look at the following files:
     bin/feedbase
     lib/feedbase.js
 
-Also be sure to check out Keeper <https://github.com/nexusdev/keeper>,
+You can also check out Keeper (<https://github.com/nexusdev/keeper>),
 an "admin toolkit for incentive-following software daemons," designed
 to do things like publishing price feeds to blockchains.
 
