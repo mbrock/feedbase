@@ -1,5 +1,5 @@
 name: feedbase
-version: 0.5.0-dev
+version: 0.5.0
 layout:
   sol_sources: contracts
   build_dir: build
@@ -8,4 +8,4 @@ environments:
     objects:
       feedbase:
         class: Feedbase
-        address: '0xa920e51b82eefd46298cca167d68d6b31c05bbd5'
+        address: '0x3957b01a4f86454b6b1283f1cc550d8af34d7e7c'
