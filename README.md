@@ -1,81 +1,116 @@
 Feedbase
 ========
 
-This simple Ethereum contract enables anyone to create a "feed" which
-can be used to publish an arbitrary sequence of values.  Feeds can be
-transferred between owners and the owner of a feed is able to charge a
-fee to on-chain consumers of the information.  Expiration dates can be
-set to prevent consumers from reading stale data.
+This small, self-contained Ethereum contract lets you create "feeds"
+that you can use to publish arbitrary 32-byte values, with attached
+expiration dates to prevent consumers from reading stale data.
+
+Perhaps most interestingly, the owner of a feed has the ability to tax
+on-chain consumers (i.e., smart contracts) for making use of the feed.
+
+This happens at most once for each feed value (to the first consumer).
+The reason for this is that you couldn't really prevent anyone from
+creating a simple contract that would repeat your feed values anyway.
+However, you're free to publish new values again as often as you want;
+again, only the first contract to read each value needs to pay for it.
+
+The prices can be changed at any time, although for security reasons
+the address of the underlying ERC20 token can only ever be set once.
+
+One obvious application of Feedbase is publishing financial data to
+smart contracts that rely on "oracles" in a nice, standardized way.
+Another interesting use case is for configuration of smart contracts.
+
+Think of Feedbase as a piece of low-level Ethereum infrastructure.
+Feedbase is not controlled by anyone and is free for anyone to use.
 
 
-Installation
-------------
+Getting started
+---------------
 
-Feedbase can be installed using npm:
+Feedbase comes with a simple commmand-line tool for managing feeds:
 
     npm install -g feedbase
 
-You also need to run an Ethereum node on your machine:
+For anything to happen, you obviously need to run an Ethereum node:
 
-    geth --testnet --rpc --unlock 0x1234567890123456789012345678901234567890
-
-The following environment variables can be used for configuration:
-
-    ETH_ACCOUNT=0x1234567890123456789012345678901234567890
-    ETH_RPC_URL=http://localhost:8545
+    geth --testnet --rpc --unlock 7
 
 
-Claiming a feed
----------------
+Working with feeds
+------------------
 
-Before you can start publishing values, you need to claim a feed ID:
+To start putting out values, you first need to claim a feed ID:
 
     feedbase claim
 
-If you want to be able to charge a fee, when claiming your feed ID,
-you need to specify the address of the token you wish to use:
+Remember, if you want to be able to tax your smart contract consumers,
+this is where you specify the address of your ERC20-compatible token:
 
     feedbase claim 0x4244e29ec71fc32a34dba8e89d4856e507d1bc87
 
-The token address of a feed can never be changed, but the fee itself
-can be reset at any time (including to zero):
+If nothing goes wrong (sad to say, the CLI is a bit flaky sometimes),
+within half a minute or so you should see something like this:
 
-    feedbase set-fee 16 0x10000000
+    {
+      "id": "31472",
+      "updated": 0,
+      "expires": 0,
+      "token": "0x0000000000000000000000000000000000000000",
+      "price": "0x0",
+      "unpaid": false
+      "owner": "0x34e510285d96cdc6063d5447763afea0acd61baa",
+      "label": "",
+    }
 
-Fees are always charged to the first contract to read each value,
-but the fee is not charged to subsequent reads of the same value
-(ie, there is a single `paid` flag per feed).
-When a new value is published, the fee is charged again (`paid` is reset to false).
+Now you can do a few things.  You can inspect the feed at will:
 
-If you want, you can add a description (32 bytes maximum):
+    feedbase inspect 31472
 
-    feedbase set-description 16 "Temperature in Central Park"
+Unfortunately, this command is currently not able to display the
+actual value of the feed to you, but only its metadata.
 
-Inspect the feed to make sure your changes went through:
+You can set an arbitrary label (32 bytes maximum):
 
-    feedbase inspect 16
+    feedbase set-label 31472 "Temperature in Central Park"
 
+If you specified a token, you can change the price:
 
-Publishing feed values
-----------------------
+    feedbase set-price 31472 0x10000000
 
-Feed values are 32 bytes of arbitrary data plus expiration dates:
+You can transfer ownership of the feed to another account:
 
-    feedbase publish 16 0x0000000000000000000000000000000490000000000000000000000000000000 1467204471
+    feedbase set-owner 31472 0x4b51d646f0e3677411b27101d2a3f09223a8372e
 
-In this example we're setting the value of the feed to the number 73
+You can also watch the blockchain for all Feedbase events:
+
+    feedbase watch
+
+To update the value of your feed, you would use a command like this:
+
+    feedbase set 31472 0x0000000000000000000000000000000490000000000000000000000000000000 1467204471
+
+Here, we're setting the value of feed number 31472 to the number 73
 represented in 128x128 fixed-point notation.  The expiration date is
-set to June 29 12:47:51 UTC 2016 (represented in Unix time).
+set to June 29 12:47:51 UTC 2016 (represented in standard Unix time).
 
-See also Keeper <https://github.com/nexusdev/keeper>.
+Again, the values can be anything as long as they fit within 32 bytes.
+
+That's it!
 
 
 More information
 ----------------
 
-For more details, please consult the following files:
+For more details, take a look at the following files:
 
-    bin/feedbase
-    lib/feedbase.js
     contracts/feedbase.sol
     contracts/feedbase_test.sol
+    bin/feedbase
+    lib/feedbase.js
+
+Also be sure to check out Keeper <https://github.com/nexusdev/keeper>,
+an "admin toolkit for incentive-following software daemons," designed
+to do things like publishing price feeds to blockchains.
+
+Happy hacking!
