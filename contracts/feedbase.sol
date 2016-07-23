@@ -188,9 +188,10 @@ contract Feedbase is FeedbaseEvents {
         pseudo_internal
     {
         feeds[id].unpaid = false;
+        FeedChanged(id);
+
         // Convert any `false' return value into an exception:
         assert(token(id).transferFrom(user, owner(id), price(id)));
-        FeedChanged(id);
     }
 
     modifier pseudo_internal() {
