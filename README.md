@@ -7,9 +7,8 @@ expiration dates to prevent consumers from reading stale data.
 
 Perhaps most interestingly, the owner of a feed has the ability to tax
 on-chain consumers (i.e., smart contracts) for making use of the feed.
-
-This happens at most once for each feed value (to the first consumer):
-the reason for this is that you couldn't really prevent anyone from
+This happens at most once for each feed value (to the first consumer).
+The reason for this is that you couldn't really prevent anyone from
 creating a simple contract that would repeat your feed values anyway.
 However, you're free to publish new values again as often as you want.
 
