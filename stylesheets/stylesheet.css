@@ -1,3 +1,32 @@
+.RidleyGrotesk-Thin {
+	font-family: RidleyGrotesk-Thin;
+	font-weight: normal;
+	font-style: normal;
+}
+.RidleyGrotesk-UltraLight {
+	font-family: RidleyGrotesk-UltraLight;
+	font-weight: normal;
+	font-style: normal;
+}
+.RidleyGrotesk-Bold {
+	font-family: RidleyGrotesk-Bold;
+	font-weight: normal;
+	font-style: normal;
+}
+.RidleyGrotesk-ExtraBold {
+	font-family: RidleyGrotesk-ExtraBold;
+	font-weight: normal;
+	font-style: normal;
+}
+.RidleyGrotesk-Medium {
+	font-family: RidleyGrotesk-Medium;
+	font-weight: normal;
+	font-style: normal;
+}
+
+
+
+
 * {
   box-sizing: border-box; }
 
@@ -10,10 +39,12 @@ body {
   color: #606c71; }
 
 a {
-  color: #1e6bb8;
+  color: #C4BFF6;
   text-decoration: none; }
   a:hover {
-    text-decoration: underline; }
+    text-decoration: underline;
+    color: #FFC857;
+  }
 
 .btn {
   display: inline-block;
@@ -56,8 +87,8 @@ a {
 .page-header {
   color: #fff;
   text-align: center;
-  background-color: #159957;
-  background-image: linear-gradient(120deg, #155799, #159957); }
+  background-color: #403888;
+  background-image: linear-gradient(120deg, #C4BFF6, #403888); }
 
 @media screen and (min-width: 64em) {
   .page-header {
@@ -112,10 +143,10 @@ a {
   margin-top: 2rem;
   margin-bottom: 1rem;
   font-weight: normal;
-  color: #159957; }
+  color: #403888; }
 .main-content p {
   margin-bottom: 1em; }
-.main-content code {
+/.main-content code {
   padding: 2px 4px;
   font-family: Consolas, "Liberation Mono", Menlo, Courier, monospace;
   font-size: 0.9rem;
@@ -123,9 +154,8 @@ a {
   background-color: #f3f6fa;
   border-radius: 0.3rem; }
 .main-content pre {
-  padding: 0.8rem;
   margin-top: 0;
-  margin-bottom: 1rem;
+  margin-bottom: 0.2rem;
   font: 1rem Consolas, "Liberation Mono", Menlo, Courier, monospace;
   color: #567482;
   word-wrap: normal;
@@ -135,6 +165,7 @@ a {
   .main-content pre > code {
     padding: 0;
     margin: 0;
+		margin-left: 1.25rem;
     font-size: 0.9rem;
     color: #567482;
     word-break: normal;
@@ -147,7 +178,8 @@ a {
     margin-bottom: 0;
     word-break: normal; }
 .main-content .highlight pre, .main-content pre {
-  padding: 0.8rem;
+  padding-top: 0.8rem;
+	padding-bottom: 0rem;
   overflow: auto;
   font-size: 0.9rem;
   line-height: 1.45;
@@ -243,3 +275,117 @@ a {
 @media screen and (max-width: 42em) {
   .site-footer {
     font-size: 0.9rem; } }
+
+
+.logo-bg {
+	z-index:1;
+}
+
+
+.logo-tr-t {
+		z-index:9999;
+		position: absolute;
+		top:4.6rem;
+}
+
+.logo-tr-b {
+		z-index:999;
+		position: absolute;
+		margin-left: 0.8rem;
+		margin-top:2rem;
+}
+
+
+.floating{
+    -webkit-animation-name: Floatingx;
+    -webkit-animation-duration: 6s;
+    -webkit-animation-iteration-count: infinite;
+    -webkit-animation-timing-function: ease-in-out;
+    -moz-animation-name: Floating;
+    -moz-animation-duration: 6s;
+    -moz-animation-iteration-count: infinite;
+    -moz-animation-timing-function: ease-in-out;
+
+
+}
+
+@-webkit-keyframes Floatingx{
+    from {-webkit-transform:translate(0, 0px);}
+    65% {-webkit-transform:translate(0, 15px);}
+    to {-webkit-transform: translate(0, -0px);    }
+}
+
+@-moz-keyframes Floating{
+    from {-moz-transform:translate(0, 0px);}
+    65% {-moz-transform:translate(0, 15px);}
+    to {-moz-transform: translate(0, -0px);}
+}
+
+
+.scaling{
+    float: left;
+    -webkit-animation-name: scalex;
+    -webkit-animation-duration:3s;
+    -webkit-animation-iteration-count:infinite;
+    -webkit-animation-timing-function:ease-in-out;
+    -moz-animation-name: scale;
+    -moz-animation-duration:3s;
+    -moz-animation-iteration-count:infinite;
+    -moz-animation-timing-function:ease-in-out;
+    margin-left: 0.6rem;
+    margin-top: 1rem;
+}
+
+.scaling2{
+    float: left;
+    -webkit-animation-name: scalex2;
+    -webkit-animation-duration:3s;
+    -webkit-animation-iteration-count:infinite;
+    -webkit-animation-timing-function:ease-in-out;
+    -moz-animation-name: scale2;
+    -moz-animation-duration:3s;
+    -moz-animation-iteration-count:infinite;
+    -moz-animation-timing-function:ease-in-out;
+    margin-left: 0.rem;
+    margin-top: 2.2rem;
+}
+
+@media screen and (max-width: 68em) {
+.scaling{
+    float: left;
+    -webkit-animation-name: scalex;
+    -webkit-animation-duration:3s;
+    -webkit-animation-iteration-count:infinite;
+    -webkit-animation-timing-function:ease-in-out;
+    -moz-animation-name: scale;
+    -moz-animation-duration:3s;
+    -moz-animation-iteration-count:infinite;
+    -moz-animation-timing-function:ease-in-out;
+    margin-left: 0.6rem;
+    margin-top: -2rem;
+} }
+
+
+    @-webkit-keyframes scalex{
+        from {-webkit-transform: scale(0.9);}
+        1% {-webkit-transform: scale(1.0);}
+        to {-webkit-transform: scale(0.9);}
+    }
+
+    @-moz-keyframes scale{
+        from {-moz-transform: scale(0.9);}
+        65% {-moz-transform: scale(1.0);}
+        to {-moz-transform: scale(0.9);}
+    }
+
+		    @-webkit-keyframes scalex2{
+		        from {-webkit-transform: scale(0.9);}
+		        14% {-webkit-transform: scale(1.0);}
+		        to {-webkit-transform: scale(0.9);}
+		    }
+
+		    @-moz-keyframes scale2{
+		        from {-moz-transform: scale(0.9);}
+		        22% {-moz-transform: scale(1.0);}
+		        to {-moz-transform: scale(0.9);}
+		    }
