@@ -85,7 +85,7 @@ You can also continuously watch the blockchain for all Feedbase events:
 
     feedbase watch
 
-To update the value of your feed, you would use a command like this:
+Now, to actually update the feed value, you'd use a command like this:
 
     feedbase set 7302 0x0000000000000000000000000000000490000000000000000000000000000000 1467204471
 
