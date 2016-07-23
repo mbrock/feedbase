@@ -81,7 +81,7 @@ You can transfer ownership of the feed to another account:
 
     feedbase set-owner 7302 0x4b51d646f0e3677411b27101d2a3f09223a8372e
 
-You can also watch the blockchain for all Feedbase events:
+You can also continuously watch the blockchain for all Feedbase events:
 
     feedbase watch
 
