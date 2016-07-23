@@ -103,11 +103,12 @@ contract Feedbase is FeedbaseEvents {
     }
 
     function claim(ERC20 token) returns (uint24 id) {
-        id = next++;
         assert(next != 0);
 
-        feeds[id].token  = token;
-        feeds[id].owner  = msg.sender;
+        id = next++;
+
+        feeds[id].token = token;
+        feeds[id].owner = msg.sender;
 
         FeedChanged(id);
     }
