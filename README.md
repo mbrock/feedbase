@@ -8,7 +8,7 @@ expiration dates to prevent consumers from reading stale data.
 Perhaps most interestingly, the owner of a feed has the ability to tax
 on-chain consumers (i.e., smart contracts) for making use of the feed.
 
-This happens at most once for each feed value (to the first consumer);
+This happens at most once for each feed value (to the first consumer):
 the reason for this is that you couldn't really prevent anyone from
 creating a simple contract that would repeat your feed values anyway.
 However, you're free to publish new values again as often as you want.
@@ -20,8 +20,8 @@ One obvious application of Feedbase is publishing financial data to
 smart contracts that rely on "oracles" in a nice, standardized way.
 Another interesting use case is for configuration of smart contracts.
 
-Think of Feedbase as a piece of low-level Ethereum infrastructure.
-It's not owned or controlled by anyone and is free for anyone to use.
+Think of Feedbase as a piece of low-level Ethereum infrastructure:
+it's free for anyone to use, and not owned or controlled by anyone.
 
 
 Getting started
