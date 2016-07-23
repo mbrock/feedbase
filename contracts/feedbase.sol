@@ -14,34 +14,40 @@
 // Feedbase is distributed in the hope that it will be useful,
 // but WITHOUT ANY WARRANTY; without even the implied warranty
 // of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
-// See the GNU General Public License for more details.
 //
+// See the GNU General Public License for more details.
 // You should have received a copy of the GNU General Public License
 // along with Feedbase.  If not, see <http://www.gnu.org/licenses/>.
 
 /// Commentary:
 
-// The reason why we use `uint72' for feed IDs is to help prevent
+// One reason why we use `uint24' for feed IDs is to help prevent
 // accidentally confusing different values of the same integer type:
-// because `uint72' is an unusual type, it becomes a lot less likely
+// because `uint24' is an unusual type, it becomes a lot less likely
 // for someone to confuse a feed ID with some other kind of value.
 //
 // (For example, this is very error-prone when dealing with functions
 // that take long lists of various parameters or return many values.)
 //
-// In addition, to make them stand out, feed IDs start at 72000000.
+// Another reason is simply to avoid wasting storage, and a third is
+// to make the IDs fit in other contexts (such as JavaScript numbers).
+//
+// While this means that only 16,777,215 feeds can ever be claimed,
+// they should simply acquire a price if we ever start running out.
+//
+// Finally, for programming convenience, feeds start at 1 (not 0).
 
 /// Code:
 
 import "erc20/erc20.sol";
 
 contract FeedbaseEvents {
-    event FeedChanged(uint72 indexed id);
+    event FeedChanged(uint24 indexed id);
 }
 
 contract Feedbase is FeedbaseEvents {
-    mapping (uint72 => Feed) feeds;
-    uint72 next = 72000000;
+    mapping (uint24 => Feed) feeds;
+    uint24 next = 1;
 
     struct Feed {
         ERC20      token;
@@ -57,34 +63,34 @@ contract Feedbase is FeedbaseEvents {
         bool       unpaid;
     }
 
-    function token(uint72 id) constant returns (ERC20) {
+    function token(uint24 id) constant returns (ERC20) {
         return feeds[id].token;
     }
-    function free(uint72 id) constant returns (bool) {
+    function free(uint24 id) constant returns (bool) {
         return token(id) == ERC20(0);
     }
 
-    function owner(uint72 id) constant returns (address) {
+    function owner(uint24 id) constant returns (address) {
         return feeds[id].owner;
     }
-    function label(uint72 id) constant returns (bytes32) {
+    function label(uint24 id) constant returns (bytes32) {
         return feeds[id].label;
     }
-    function price(uint72 id) constant returns (uint) {
+    function price(uint24 id) constant returns (uint) {
         return feeds[id].price;
     }
 
-    function timestamp(uint72 id) constant returns (uint40) {
+    function timestamp(uint24 id) constant returns (uint40) {
         return feeds[id].timestamp;
     }
-    function expiration(uint72 id) constant returns (uint40) {
+    function expiration(uint24 id) constant returns (uint40) {
         return feeds[id].expiration;
     }
-    function expired(uint72 id) constant returns (bool) {
+    function expired(uint24 id) constant returns (bool) {
         return time() >= expiration(id);
     }
 
-    function unpaid(uint72 id) constant returns (bool) {
+    function unpaid(uint24 id) constant returns (bool) {
         return feeds[id].unpaid;
     }
 
@@ -92,11 +98,11 @@ contract Feedbase is FeedbaseEvents {
     // Creating feeds
     //------------------------------------------------------------------
 
-    function claim() returns (uint72 feed_id) {
+    function claim() returns (uint24 id) {
         return claim(ERC20(0));
     }
 
-    function claim(ERC20 token) returns (uint72 id) {
+    function claim(ERC20 token) returns (uint24 id) {
         id = next++;
         assert(next != 0);
 
@@ -106,7 +112,7 @@ contract Feedbase is FeedbaseEvents {
         FeedChanged(id);
     }
 
-    modifier auth(uint72 id) {
+    modifier auth(uint24 id) {
         assert(msg.sender == owner(id));
         _
     }
@@ -115,7 +121,7 @@ contract Feedbase is FeedbaseEvents {
     // Updating feeds
     //------------------------------------------------------------------
 
-    function set(uint72 id, bytes32 value, uint40 expiration)
+    function set(uint24 id, bytes32 value, uint40 expiration)
         auth(id)
     {
         feeds[id].value      = value;
@@ -126,7 +132,7 @@ contract Feedbase is FeedbaseEvents {
         FeedChanged(id);
     }
 
-    function set_price(uint72 id, uint price)
+    function set_price(uint24 id, uint price)
         auth(id)
     {
         assert(!free(id));
@@ -134,14 +140,14 @@ contract Feedbase is FeedbaseEvents {
         FeedChanged(id);
     }
 
-    function set_owner(uint72 id, address owner)
+    function set_owner(uint24 id, address owner)
         auth(id)
     {
         feeds[id].owner = owner;
         FeedChanged(id);
     }
 
-    function set_label(uint72 id, bytes32 label)
+    function set_label(uint24 id, bytes32 label)
         auth(id)
     {
         feeds[id].label = label;
@@ -152,13 +158,13 @@ contract Feedbase is FeedbaseEvents {
     // Reading feeds
     //------------------------------------------------------------------
 
-    function get(uint72 id) returns (bytes32 value, bool ok) {
+    function get(uint24 id) returns (bytes32 value, bool ok) {
         if (can_get(msg.sender, id)) {
             return (feeds[id].value, true);
         }
     }
 
-    function can_get(address user, uint72 id)
+    function can_get(address user, uint24 id)
         internal returns (bool)
     {
         if (expired(id)) {
@@ -170,15 +176,15 @@ contract Feedbase is FeedbaseEvents {
         }
     }
 
-    function try_pay(address user, uint72 id)
+    function try_pay(address user, uint24 id)
         internal returns (bool)
     {
         // Convert any exceptions back into `false':
-        var pay_function = bytes4(sha3("pay(address,uint72)"));
+        var pay_function = bytes4(sha3("pay(address,uint24)"));
         return this.call(pay_function, user, id);
     }
 
-    function pay(address user, uint72 id)
+    function pay(address user, uint24 id)
         pseudo_internal
     {
         feeds[id].unpaid = false;

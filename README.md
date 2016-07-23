@@ -8,11 +8,10 @@ expiration dates to prevent consumers from reading stale data.
 Perhaps most interestingly, the owner of a feed has the ability to tax
 on-chain consumers (i.e., smart contracts) for making use of the feed.
 
-This happens at most once for each feed value (to the first consumer).
-The reason for this is that you couldn't really prevent anyone from
+This happens at most once for each feed value (to the first consumer);
+the reason for this is that you couldn't really prevent anyone from
 creating a simple contract that would repeat your feed values anyway.
-However, you're free to publish new values again as often as you want;
-again, only the first contract to read each value needs to pay for it.
+However, you're free to publish new values again as often as you want.
 
 The prices can be changed at any time, although for security reasons
 the address of the underlying ERC20 token can only ever be set once.
@@ -53,7 +52,7 @@ If nothing goes wrong (sad to say, the CLI is a bit flaky sometimes),
 within half a minute or so you should see something like this:
 
     {
-      "id": "72000415",
+      "id": "7302",
       "token": "0x0000000000000000000000000000000000000000",
       "owner": "0x34e510285d96cdc6063d5447763afea0acd61baa",
       "label": "",
@@ -65,22 +64,22 @@ within half a minute or so you should see something like this:
 
 Now you can do a few things.  You can inspect the feed at will:
 
-    feedbase inspect 72000415
+    feedbase inspect 7302
 
 Unfortunately, this command is currently not able to display the
 actual value of the feed to you, but only its metadata.
 
 You can set an arbitrary label (32 bytes maximum):
 
-    feedbase set-label 72000415 "Temperature in Central Park"
+    feedbase set-label 7302 "Temperature in Central Park"
 
 If you specified a token, you can change the price:
 
-    feedbase set-price 72000415 0x10000000
+    feedbase set-price 7302 0x10000000
 
 You can transfer ownership of the feed to another account:
 
-    feedbase set-owner 72000415 0x4b51d646f0e3677411b27101d2a3f09223a8372e
+    feedbase set-owner 7302 0x4b51d646f0e3677411b27101d2a3f09223a8372e
 
 You can also watch the blockchain for all Feedbase events:
 
@@ -88,9 +87,9 @@ You can also watch the blockchain for all Feedbase events:
 
 To update the value of your feed, you would use a command like this:
 
-    feedbase set 72000415 0x0000000000000000000000000000000490000000000000000000000000000000 1467204471
+    feedbase set 7302 0x0000000000000000000000000000000490000000000000000000000000000000 1467204471
 
-Here, we're setting the value of feed number 72000415 to the number 73
+Here, we're setting the value of feed number 7302 to the number 73
 represented in 128x128 fixed-point notation.  The expiration date is
 set to June 29 12:47:51 UTC 2016 (represented in standard Unix time).
 

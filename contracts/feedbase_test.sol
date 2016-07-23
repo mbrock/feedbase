@@ -32,7 +32,7 @@ contract FeedbaseTest is Test,
     FakeToken   token      = new FakeToken();
     Feedbase    feedbase   = new Feedbase();
 
-    uint72      id;
+    uint24      id;
 
     function setUp() {
         assistant._target(feedbase);
@@ -44,8 +44,8 @@ contract FeedbaseTest is Test,
     }
 
     function test_claim() {
-        assertEq(uint(id), 72000000);
-        assertEq(uint(feedbase.claim()), 72000001);
+        assertEq(uint(id), 1);
+        assertEq(uint(feedbase.claim()), 2);
     }
 
     function test_get() {
@@ -191,7 +191,7 @@ contract FeedbaseTest is Test,
 }
 
 contract FakePerson is Tester {
-    function get(uint72 id) returns (bytes32, bool) {
+    function get(uint24 id) returns (bytes32, bool) {
         return Feedbase(_t).get(id);
     }
 }
