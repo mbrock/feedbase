@@ -38,17 +38,17 @@ For anything to happen, you obviously need to run an Ethereum node:
 Working with feeds
 ------------------
 
-To start putting out values, you first need to claim a feed ID:
+To start putting out values, first you need to claim your feed:
 
     feedbase claim
 
-Remember, if you want to be able to tax your smart contract consumers,
-this is where you specify the address of your ERC20-compatible token:
+If you want to be able to tax your smart contract consumers, this step
+is where you specify the address of your (ERC20-compatible) token:
 
     feedbase claim 0x4244e29ec71fc32a34dba8e89d4856e507d1bc87
 
 If nothing goes wrong (sad to say, the CLI is a bit flaky sometimes),
-within half a minute or so you should see something like this:
+within a minute you should see something like this:
 
     {
       "id": "7302",
@@ -65,8 +65,9 @@ Now you can do a few things.  You can inspect the feed at will:
 
     feedbase inspect 7302
 
-Unfortunately, this command is currently not able to display the
-actual value of the feed to you, but only its metadata.
+Unfortunately, even though you are an off-chain consumer (who can in
+principle read all the feed values for free), the `feedbase inspect`
+command is currently not able to display the actual value of a feed.
 
 You can set an arbitrary label (32 bytes maximum):
 
