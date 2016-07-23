@@ -53,34 +53,34 @@ If nothing goes wrong (sad to say, the CLI is a bit flaky sometimes),
 within half a minute or so you should see something like this:
 
     {
-      "id": "31472",
-      "updated": 0,
-      "expires": 0,
+      "id": "72000415",
       "token": "0x0000000000000000000000000000000000000000",
-      "price": "0x0",
-      "unpaid": false
       "owner": "0x34e510285d96cdc6063d5447763afea0acd61baa",
       "label": "",
+      "price": "0x0",
+      "timestamp": 0,
+      "expiration": 0,
+      "unpaid": false
     }
 
 Now you can do a few things.  You can inspect the feed at will:
 
-    feedbase inspect 31472
+    feedbase inspect 72000415
 
 Unfortunately, this command is currently not able to display the
 actual value of the feed to you, but only its metadata.
 
 You can set an arbitrary label (32 bytes maximum):
 
-    feedbase set-label 31472 "Temperature in Central Park"
+    feedbase set-label 72000415 "Temperature in Central Park"
 
 If you specified a token, you can change the price:
 
-    feedbase set-price 31472 0x10000000
+    feedbase set-price 72000415 0x10000000
 
 You can transfer ownership of the feed to another account:
 
-    feedbase set-owner 31472 0x4b51d646f0e3677411b27101d2a3f09223a8372e
+    feedbase set-owner 72000415 0x4b51d646f0e3677411b27101d2a3f09223a8372e
 
 You can also watch the blockchain for all Feedbase events:
 
@@ -88,9 +88,9 @@ You can also watch the blockchain for all Feedbase events:
 
 To update the value of your feed, you would use a command like this:
 
-    feedbase set 31472 0x0000000000000000000000000000000490000000000000000000000000000000 1467204471
+    feedbase set 72000415 0x0000000000000000000000000000000490000000000000000000000000000000 1467204471
 
-Here, we're setting the value of feed number 31472 to the number 73
+Here, we're setting the value of feed number 72000415 to the number 73
 represented in 128x128 fixed-point notation.  The expiration date is
 set to June 29 12:47:51 UTC 2016 (represented in standard Unix time).
 

@@ -30,7 +30,7 @@ contract FeedbaseTest is Test,
 {
     FakePerson  assistant  = new FakePerson();
     FakeToken   token      = new FakeToken();
-    Feedbase    feedbase   = new Feedbase(123);
+    Feedbase    feedbase   = new Feedbase();
 
     uint72      id;
 
@@ -44,12 +44,8 @@ contract FeedbaseTest is Test,
     }
 
     function test_claim() {
-        assertEq(uint(id), 123);
-
-        expectEventsExact(feedbase);
-
-        FeedChanged(feedbase.claim());
-        FeedChanged(feedbase.claim(token));
+        assertEq(uint(id), 72000000);
+        assertEq(uint(feedbase.claim()), 72000001);
     }
 
     function test_get() {
@@ -61,9 +57,9 @@ contract FeedbaseTest is Test,
         feedbase.set(id, 0x1234, time() + 1);
         FeedChanged(id);
 
-        var (ok, value) = assistant.get(id);
-        assertTrue(ok);
+        var (value, ok) = assistant.get(id);
         assertEq32(value, 0x1234);
+        assertTrue(ok);
     }
 
     function test_get_expired() {
@@ -72,9 +68,9 @@ contract FeedbaseTest is Test,
         feedbase.set(id, 0x1234, 123);
         FeedChanged(id);
 
-        var (ok, value) = feedbase.get(id);
-        assertFalse(ok);
+        var (value, ok) = feedbase.get(id);
         assertEq32(value, 0);
+        assertFalse(ok);
     }
 
     function test_payment() {
@@ -88,10 +84,10 @@ contract FeedbaseTest is Test,
 
         token.set_balance(assistant, 2000);
 
-        var (ok, value) = assistant.get(id);
+        var (value, ok) = assistant.get(id);
         FeedChanged(id);
-        assertTrue(ok);
         assertEq32(value, 0x1234);
+        assertTrue(ok);
 
         assertEq(token.balances(assistant), 1950);
     }
@@ -107,19 +103,19 @@ contract FeedbaseTest is Test,
 
         token.set_balance(assistant, 2000);
 
-        var (ok_1, value_1) = assistant.get(id);
+        var (value_1, ok_1) = assistant.get(id);
         FeedChanged(id);
-        assertTrue(ok_1);
         assertEq32(value_1, 0x1234);
+        assertTrue(ok_1);
 
-        var (ok_2, value_2) = assistant.get(id);
-        assertTrue(ok_2);
+        var (value_2, ok_2) = assistant.get(id);
         assertEq32(value_2, 0x1234);
+        assertTrue(ok_2);
 
         assertEq(token.balances(assistant), 1950);
     }
 
-    function test_failed_payment_token_throw() {
+    function test_failed_payment_throwing_token() {
         expectEventsExact(feedbase);
 
         feedbase.set_price(id, 50);
@@ -130,14 +126,14 @@ contract FeedbaseTest is Test,
 
         token.set_balance(assistant, 49);
 
-        var (ok, value) = assistant.get(id);
-        assertFalse(ok);
+        var (value, ok) = assistant.get(id);
         assertEq32(value, 0);
+        assertFalse(ok);
 
         assertEq(token.balances(assistant), 49);
     }
 
-    function test_failed_payment_no_token_throw() {
+    function test_failed_payment_nonthrowing_token() {
         expectEventsExact(feedbase);
 
         feedbase.set_price(id, 50);
@@ -149,14 +145,14 @@ contract FeedbaseTest is Test,
         token.set_balance(assistant, 49);
         token.disable_throwing();
 
-        var (ok, value) = assistant.get(id);
-        assertFalse(ok);
+        var (value, ok) = assistant.get(id);
         assertEq32(value, 0);
+        assertFalse(ok);
 
         assertEq(token.balances(assistant), 49);
     }
 
-    function testFail_set_price_when_gratis() {
+    function testFail_set_price_without_token() {
         feedbase.set_price(feedbase.claim(), 50);
     }
 
@@ -195,7 +191,7 @@ contract FeedbaseTest is Test,
 }
 
 contract FakePerson is Tester {
-    function get(uint72 id) returns (bool, bytes32) {
+    function get(uint72 id) returns (bytes32, bool) {
         return Feedbase(_t).get(id);
     }
 }
