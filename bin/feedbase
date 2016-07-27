@@ -39,21 +39,23 @@ if (command == "inspect") {
     }
   })
 } else if (method = feedbase[command.replace(/-/g, "_")]) {
-  method.apply(feedbase, args)
+  console.warn(`Sent ${method.apply(feedbase, args)}.`)
 
   if (command == "claim") {
+    console.warn("Waiting for confirmation...")
+    setTimeout(function() { fail("error: timed out") }, TIMEOUT)
     feedbase.filter({}, function(error, id) {
       if (error) {
         fail(error.message)
       } else if (feedbase.owner(id) == feedbase.account) {
         dump(feedbase.inspect(id));
         process.exit(0)
+      } else {
+        console.warn(JSON.stringify(
+          feedbase.inspect(id), null, 2
+        ).replace(/^/gm, "debug: "));
       }
     })
-
-    setTimeout(function() {
-      fail("error: no events belonging to " + feedbase.account)
-    }, TIMEOUT)
   }
 } else {
   fail("error: unknown command: " + command)
