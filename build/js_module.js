@@ -1,6 +1,5 @@
 'use strict';
 
-var mordenContractAddress = '0x8c4708960fd7b0254e10cee773dbf73746de8a7e'
 // For geth
 if (typeof dapple === 'undefined') {
   var dapple = {};
@@ -16,7 +15,7 @@ dapple['feedbase'] = (function builder () {
         'objects': {
           'feedbase': {
             'class': 'Feedbase',
-            'address': mordenContractAddress
+            'address': '0x8c4708960fd7b0254e10cee773dbf73746de8a7e'
           }
         }
       }
@@ -52,7 +51,7 @@ dapple['feedbase'] = (function builder () {
       'objects': {
         'feedbase': {
           'class': 'Feedbase',
-          'address': mordenContractAddress
+          'address': '0x8c4708960fd7b0254e10cee773dbf73746de8a7e'
         }
       }
     };
