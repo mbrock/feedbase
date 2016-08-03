@@ -200,6 +200,14 @@ contract Feedbase is FeedbaseEvents {
         _
     }
 
+    // returns the value on tax-free contracts
+    function value(uint24 id)
+        constant returns (bytes32)
+    {
+        if (!unpaid(id)) {
+            return feeds[id].value;
+        }
+    }
     //------------------------------------------------------------------
 
     function time() internal returns (uint40) {

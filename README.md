@@ -65,9 +65,7 @@ Now you can do a few things.  You can inspect the feed at will:
 
     feedbase inspect 7302
 
-**Note:**  Unfortunately, although you are an off-chain consumer who
-can in principle read the value of any feed for free, the `feedbase
-inspect` command cannot currently display the actual value of a feed.
+**Note:**  You can read the value using `feedbase inspect` only if this is a tax-free feed.
 
 You can set an arbitrary label (32 bytes maximum):
 
