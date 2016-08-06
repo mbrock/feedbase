@@ -39,10 +39,7 @@ if (command == "inspect") {
     }
   })
 } else if (method = feedbase[command.replace(/-/g, "_")]) {
-  console.warn(`Sent ${method.apply(feedbase, args)}.`)
-
   if (command == "claim") {
-    console.warn("Waiting for confirmation...")
     setTimeout(function() { fail("error: timed out") }, TIMEOUT)
     feedbase.filter({}, function(error, id) {
       if (error) {
