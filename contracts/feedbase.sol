@@ -80,6 +80,9 @@ contract Feedbase is FeedbaseEvents {
         return feeds[id].price;
     }
 
+    function value(uint24 id) constant returns (bytes32 value) {
+        (value, ) = get(id);
+    }
     function timestamp(uint24 id) constant returns (uint40) {
         return feeds[id].timestamp;
     }
@@ -200,14 +203,6 @@ contract Feedbase is FeedbaseEvents {
         _
     }
 
-    // returns the value on tax-free contracts
-    function value(uint24 id)
-        constant returns (bytes32)
-    {
-        if (!unpaid(id)) {
-            return feeds[id].value;
-        }
-    }
     //------------------------------------------------------------------
 
     function time() internal returns (uint40) {

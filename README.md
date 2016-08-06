@@ -65,7 +65,11 @@ Now you can do a few things.  You can inspect the feed at will:
 
     feedbase inspect 7302
 
-**Note:**  You can read the value using `feedbase inspect` only if this is a tax-free feed.
+**Note:** Although you are an off-chain consumer who can in principle
+read the value of any feed for free, the `feedbase inspect` command is
+not currently able to display the value of a feed unless it's either
+free or else is one that you would hypothetically be able to pay for.
+(This is because it's implemented using the `eth_call` RPC operation.)
 
 You can set an arbitrary label (32 bytes maximum):
 
