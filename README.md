@@ -56,6 +56,7 @@ within a minute you should see something like this:
       "owner": "0x34e510285d96cdc6063d5447763afea0acd61baa",
       "label": "",
       "price": "0x0",
+      "value": "0x0000000000000000000000000000000000000000000000000000000000000000",
       "timestamp": 0,
       "expiration": 0,
       "unpaid": false
@@ -68,8 +69,9 @@ Now you can do a few things.  You can inspect the feed at will:
 **Note:** Although you are an off-chain consumer who can in principle
 read the value of any feed for free, the `feedbase inspect` command is
 not currently able to display the value of a feed unless it's either
-free or else is one that you would hypothetically be able to pay for.
-(This is because it's implemented using the `eth_call` RPC operation.)
+free or else is one that you would hypothetically be able to pay for;
+this is because it's implemented using the `eth_call` RPC operation.
+If the value has expired or cannot be read, it will show up as zero.
 
 You can set an arbitrary label (32 bytes maximum):
 
