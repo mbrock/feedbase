@@ -38,6 +38,8 @@ For anything to happen, you need to run an RPC-enabled Ethereum node:
 
     geth --testnet --rpc --unlock 0x1234567890123456789012345678901234567890
 
+**Important:** Make sure your chain is synced before using `feedbase`.
+
 
 Working with feeds
 ------------------

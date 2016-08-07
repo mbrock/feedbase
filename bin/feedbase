@@ -40,7 +40,10 @@ if (command == "inspect") {
   })
 } else if (method = feedbase[command.replace(/-/g, "_")]) {
   if (command == "claim") {
-    setTimeout(function() { fail("error: timed out") }, TIMEOUT)
+    setTimeout(function() {
+      fail("error: timed out (unsynced blockchain?)")
+    }, TIMEOUT)
+
     feedbase.filter({}, function(error, id) {
       if (error) {
         fail(error.message)
