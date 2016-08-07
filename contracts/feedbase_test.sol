@@ -60,8 +60,6 @@ contract FeedbaseTest is Test,
         var (value, ok) = assistant.get(id);
         assertEq32(value, 0x1234);
         assertTrue(ok);
-
-        assertEq32(feedbase.value(id), 0x1234);
     }
 
     function test_get_expired() {
@@ -73,8 +71,6 @@ contract FeedbaseTest is Test,
         var (value, ok) = feedbase.get(id);
         assertEq32(value, 0);
         assertFalse(ok);
-
-        assertEq32(feedbase.value(id), 0);
     }
 
     function test_payment() {
