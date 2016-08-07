@@ -39,6 +39,8 @@ if (command == "inspect") {
     }
   })
 } else if (method = feedbase[command.replace(/-/g, "_")]) {
+  method.apply(feedbase, args)
+
   if (command == "claim") {
     setTimeout(function() {
       fail("error: timed out (unsynced blockchain?)")
