@@ -30,15 +30,19 @@ Feedbase comes with a simple commmand-line tool for managing feeds:
 
     npm install -g feedbase
 
-For anything to happen, you obviously need to run an Ethereum node:
+To specify which Ethereum account to use (defaults to the first one):
 
-    geth --testnet --rpc --unlock 7
+    export ETH_ACCOUNT=0x1234567890123456789012345678901234567890
+
+For anything to happen, you need to run an RPC-enabled Ethereum node:
+
+    geth --testnet --rpc --unlock 0x1234567890123456789012345678901234567890
 
 
 Working with feeds
 ------------------
 
-To start putting out values, first you need to claim your feed:
+To start publishing your values, first claim a feed ID:
 
     feedbase claim
 
