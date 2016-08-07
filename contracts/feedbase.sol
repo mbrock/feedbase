@@ -42,12 +42,25 @@
 import "erc20/erc20.sol";
 
 contract FeedbaseEvents {
-    event FeedChanged(uint24 indexed id);
+    event LogClaim     (uint24 indexed id, address owner, ERC20 token);
+    event LogSet       (uint24 indexed id, bytes32 value, uint40 expiration);
+    event LogSetPrice  (uint24 indexed id, uint price);
+    event LogSetOwner  (uint24 indexed id, address owner);
+    event LogSetLabel  (uint24 indexed id, bytes32 label);
+    event LogPay       (uint24 indexed id, address user);
 }
 
 contract Feedbase is FeedbaseEvents {
     mapping (uint24 => Feed) feeds;
     uint24 next = 1;
+
+    function time() internal returns (uint40) {
+        return uint40(now);
+    }
+
+    function assert(bool ok) internal {
+        if (!ok) throw;
+    }
 
     struct Feed {
         ERC20      token;
@@ -103,14 +116,14 @@ contract Feedbase is FeedbaseEvents {
     }
 
     function claim(ERC20 token) returns (uint24 id) {
-        assert(next != 0);
+        assert(next > 0);
 
         id = next++;
 
         feeds[id].token = token;
         feeds[id].owner = msg.sender;
 
-        FeedChanged(id);
+        LogClaim(id, msg.sender, token);
     }
 
     modifier auth(uint24 id) {
@@ -130,7 +143,7 @@ contract Feedbase is FeedbaseEvents {
         feeds[id].expiration = expiration;
         feeds[id].unpaid     = !free(id);
 
-        FeedChanged(id);
+        LogSet(id, value, expiration);
     }
 
     function set_price(uint24 id, uint price)
@@ -138,21 +151,21 @@ contract Feedbase is FeedbaseEvents {
     {
         assert(!free(id));
         feeds[id].price = price;
-        FeedChanged(id);
+        LogSetPrice(id, price);
     }
 
     function set_owner(uint24 id, address owner)
         auth(id)
     {
         feeds[id].owner = owner;
-        FeedChanged(id);
+        LogSetOwner(id, owner);
     }
 
     function set_label(uint24 id, bytes32 label)
         auth(id)
     {
         feeds[id].label = label;
-        FeedChanged(id);
+        LogSetLabel(id, label);
     }
 
     //------------------------------------------------------------------
@@ -189,7 +202,7 @@ contract Feedbase is FeedbaseEvents {
         pseudo_internal
     {
         feeds[id].unpaid = false;
-        FeedChanged(id);
+        LogPay(id, user);
 
         // Convert any `false' return value into an exception:
         assert(token(id).transferFrom(user, owner(id), price(id)));
@@ -198,15 +211,5 @@ contract Feedbase is FeedbaseEvents {
     modifier pseudo_internal() {
         assert(msg.sender == address(this));
         _
-    }
-
-    //------------------------------------------------------------------
-
-    function time() internal returns (uint40) {
-        return uint40(now);
-    }
-
-    function assert(bool ok) internal {
-        if (!ok) throw;
     }
 }

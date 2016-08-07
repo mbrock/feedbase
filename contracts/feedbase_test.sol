@@ -52,10 +52,10 @@ contract FeedbaseTest is Test,
         expectEventsExact(feedbase);
 
         id = feedbase.claim();
-        FeedChanged(id);
+        LogClaim(id, address(this), ERC20(0x0));
 
         feedbase.set(id, 0x1234, time() + 1);
-        FeedChanged(id);
+        LogSet(id, 0x1234, time() + 1);
 
         var (value, ok) = assistant.get(id);
         assertEq32(value, 0x1234);
@@ -66,7 +66,7 @@ contract FeedbaseTest is Test,
         expectEventsExact(feedbase);
 
         feedbase.set(id, 0x1234, 123);
-        FeedChanged(id);
+        LogSet(id, 0x1234, 123);
 
         var (value, ok) = feedbase.get(id);
         assertEq32(value, 0);
@@ -77,15 +77,15 @@ contract FeedbaseTest is Test,
         expectEventsExact(feedbase);
 
         feedbase.set_price(id, 50);
-        FeedChanged(id);
+        LogSetPrice(id, 50);
 
         feedbase.set(id, 0x1234, time() + 1);
-        FeedChanged(id);
+        LogSet(id, 0x1234, time() + 1);
 
         token.set_balance(assistant, 2000);
 
         var (value, ok) = assistant.get(id);
-        FeedChanged(id);
+        LogPay(id, assistant);
         assertEq32(value, 0x1234);
         assertTrue(ok);
 
@@ -96,15 +96,15 @@ contract FeedbaseTest is Test,
         expectEventsExact(feedbase);
 
         feedbase.set_price(id, 50);
-        FeedChanged(id);
+        LogSetPrice(id, 50);
 
         feedbase.set(id, 0x1234, time() + 1);
-        FeedChanged(id);
+        LogSet(id, 0x1234, time() + 1);
 
         token.set_balance(assistant, 2000);
 
         var (value_1, ok_1) = assistant.get(id);
-        FeedChanged(id);
+        LogPay(id, assistant);
         assertEq32(value_1, 0x1234);
         assertTrue(ok_1);
 
@@ -119,10 +119,10 @@ contract FeedbaseTest is Test,
         expectEventsExact(feedbase);
 
         feedbase.set_price(id, 50);
-        FeedChanged(id);
+        LogSetPrice(id, 50);
 
         feedbase.set(id, 0x1234, time() + 1);
-        FeedChanged(id);
+        LogSet(id, 0x1234, time() + 1);
 
         token.set_balance(assistant, 49);
 
@@ -137,10 +137,10 @@ contract FeedbaseTest is Test,
         expectEventsExact(feedbase);
 
         feedbase.set_price(id, 50);
-        FeedChanged(id);
+        LogSetPrice(id, 50);
 
         feedbase.set(id, 0x1234, time() + 1);
-        FeedChanged(id);
+        LogSet(id, 0x1234, time() + 1);
 
         token.set_balance(assistant, 49);
         token.disable_throwing();
@@ -164,10 +164,10 @@ contract FeedbaseTest is Test,
         expectEventsExact(feedbase);
 
         feedbase.set_owner(id, assistant);
-        FeedChanged(id);
+        LogSetOwner(id, assistant);
 
         Feedbase(assistant).set_price(id, 50);
-        FeedChanged(id);
+        LogSetPrice(id, 50);
 
         assertEq(feedbase.price(id), 50);
     }
@@ -180,7 +180,7 @@ contract FeedbaseTest is Test,
         expectEventsExact(feedbase);
 
         feedbase.set_label(id, "foo");
-        FeedChanged(id);
+        LogSetLabel(id, "foo");
 
         assertEq32(feedbase.label(id), "foo");
     }
