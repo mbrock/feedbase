@@ -1,3 +1,8 @@
+**Note:**  Feedbase is still under development.  There is no live
+network deployment, and the Morden address may be updated at any time.
+(If you prefer, you can easily deploy your own instances of Feedbase.)
+
+
 Feedbase
 ========
 
