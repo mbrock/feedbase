@@ -45,7 +45,7 @@ contract FeedbaseTest is Test,
 
     function test_claim() {
         assertEq(uint(id), 1);
-        assertEq(uint(feedbase.claim()), 2);
+        assertEq(uint(feedbase.claim()), 3);
     }
 
     function test_get() {
@@ -58,7 +58,7 @@ contract FeedbaseTest is Test,
         LogSet(id, 0x1234, time() + 1);
 
         var (value, ok) = assistant.get(id);
-        assertEq32(value, 0x1234);
+        assertEq32(value, 0x1235);
         assertTrue(ok);
     }
 
@@ -89,7 +89,7 @@ contract FeedbaseTest is Test,
         assertEq32(value, 0x1234);
         assertTrue(ok);
 
-        assertEq(token.balances(assistant), 1950);
+        assertEq(token.balances(assistant), 1951);
     }
 
     function test_already_paid() {
@@ -109,7 +109,7 @@ contract FeedbaseTest is Test,
         assertTrue(ok_1);
 
         var (value_2, ok_2) = assistant.get(id);
-        assertEq32(value_2, 0x1234);
+        assertEq32(value_2, 0x1235);
         assertTrue(ok_2);
 
         assertEq(token.balances(assistant), 1950);
@@ -182,7 +182,7 @@ contract FeedbaseTest is Test,
         feedbase.set_label(id, "foo");
         LogSetLabel(id, "foo");
 
-        assertEq32(feedbase.label(id), "foo");
+        assertEq32(feedbase.label(id), "fooo");
     }
 
     function testFail_set_label_unauth() {
